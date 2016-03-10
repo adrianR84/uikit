@@ -10,50 +10,67 @@
 //
 // Text
 //
+//
+/* 
+@base-body-font-family:                         "Helvetica Neue", Helvetica, Arial, sans-serif;
+@base-code-font-family:                         Consolas, monospace, serif;
+@base-heading-font-family:                      "Helvetica Neue", Helvetica, Arial, sans-serif;
+@navbar-nav-font-family:                        "Helvetica Neue", Helvetica, Arial, sans-serif;
+*/
 
-@global-color:                                  #444;
-@global-muted-color:                            #999;
-@global-text-shadow:                            #fff;
+@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 
-@global-link-color:                             #07D;
-@global-link-hover-color:                       #059;
+
+@base-body-font-family:                         'Droid Serif', Arial, sans-serif;
+@base-code-font-family:                         Consolas, monospace, serif;
+@base-heading-font-family:                      @base-body-font-family;
+@navbar-nav-font-family:                        @base-body-font-family;
+
+
+
+@global-color:                                  #000;
+@global-muted-color:                            #777;
+@global-text-shadow:                            transparent;
+
+@global-link-color:                             #BA0D29;
+@global-link-hover-color:                       #D16868;
 
 @global-contrast-color:                         #fff;
 @global-contrast-text-shadow:                   rgba(0,0,0,0.2);
 
 @global-font-size:                              14px;
-@global-line-height:                            20px;
+@global-line-height:                            18px;
 
 //
 // Backgrounds & Borders
 //
 
 @global-background:                             #fff;
-@global-border:                                 #ddd;
+@global-border:                                 @global-primary-background;
 
-@global-border-radius:                          5px;
+@global-border-radius:                          8px;
 
 @global-default-gradient-top:                   #fff;
-@global-default-gradient-bottom:                #eee;
+@global-default-gradient-bottom:                #ccc;
 @global-default-background:                     mix(@global-default-gradient-top, @global-default-gradient-bottom, 50%);
 @global-default-hover-background:               #fafafa;
 @global-default-active-background:              #f5f5f5;
 
-@global-primary-gradient-top:                   #00b4f5;
-@global-primary-gradient-bottom:                #008dc5;
-@global-primary-background:                     mix(@global-primary-gradient-top, @global-primary-gradient-bottom, 40%);
+@global-primary-gradient-top:                   #BA0D29;
+@global-primary-gradient-bottom:                #D16868;
+@global-primary-background:                     mix(@global-primary-gradient-top, @global-primary-gradient-bottom, 50%);
 
 @global-success-gradient-top:                   #9fd256;
 @global-success-gradient-bottom:                #6fac34;
-@global-success-background:                     mix(@global-success-gradient-top, @global-success-gradient-bottom, 40%);
+@global-success-background:                     mix(@global-success-gradient-top, @global-success-gradient-bottom, 50%);
 
 @global-warning-gradient-top:                   #fbb450;
 @global-warning-gradient-bottom:                #f89406;
-@global-warning-background:                     mix(@global-warning-gradient-top, @global-warning-gradient-bottom, 40%);
+@global-warning-background:                     mix(@global-warning-gradient-top, @global-warning-gradient-bottom, 50%);
 
 @global-danger-gradient-top:                    #ee465a;
 @global-danger-gradient-bottom:                 #c11a39;
-@global-danger-background:                      mix(@global-danger-gradient-top, @global-danger-gradient-bottom, 40%);
+@global-danger-background:                      mix(@global-danger-gradient-top, @global-danger-gradient-bottom, 50%);
 
 //
 // Spacings
@@ -78,3 +95,4 @@
 //
 
 @global-z-index:                                1000;
+

@@ -9,7 +9,7 @@
 
 @nav-header-padding-vertical:                   @nav-padding-vertical;
 @nav-header-padding-horizontal:                 @nav-padding-horizontal;
-@nav-header-font-size:                          round((@global-font-size * 0.85)); // 12px / 14px
+@nav-header-font-size:                          round((@global-font-size * 1)); // 12px / 14px
 @nav-header-margin-top:                         @global-margin;
 
 @nav-divider-margin-horizontal:                 @nav-padding-horizontal;
@@ -22,9 +22,9 @@
 @nav-parent-icon-width:                         @global-line-height;
 
 @nav-side-color:                                @global-color;
-@nav-side-hover-background:                     rgba(0,0,0,0.03);
+@nav-side-hover-background:                     lighten(@global-primary-background, 10%);
 @nav-side-hover-color:                          @global-color;
-@nav-side-active-background:                    @global-primary-background;
+@nav-side-active-background:                    darken(@global-primary-background, 10%);
 @nav-side-active-color:                         @global-contrast-color;
 @nav-side-header-color:                         @global-color;
 @nav-side-divider-border:                       @global-border;
@@ -32,7 +32,7 @@
 @nav-side-nested-hover-color:                   @global-link-hover-color;
 
 @nav-dropdown-color:                            @global-color;
-@nav-dropdown-hover-background:                 @global-primary-background;
+@nav-dropdown-hover-background:                 lighten(@global-primary-background, 10%);
 @nav-dropdown-hover-color:                      @global-contrast-color;
 @nav-dropdown-header-color:                     @global-muted-color;
 @nav-dropdown-divider-border:                   @global-border;
@@ -40,7 +40,7 @@
 @nav-dropdown-nested-hover-color:               @global-link-hover-color;
 
 @nav-navbar-color:                              @global-color;
-@nav-navbar-hover-background:                   @global-primary-background;
+@nav-navbar-hover-background:                   lighten(@global-primary-background, 10%);
 @nav-navbar-hover-color:                        @global-contrast-color;
 @nav-navbar-header-color:                       @global-muted-color;
 @nav-navbar-divider-border:                     @global-border;
@@ -48,12 +48,12 @@
 @nav-navbar-nested-hover-color:                 @global-link-hover-color;
 
 @nav-offcanvas-color:                           @offcanvas-panel-link-color;
-@nav-offcanvas-hover-background:                lighten(@offcanvas-bar-background, 5%);
+@nav-offcanvas-hover-background:                lighten(@offcanvas-bar-background, 10%);
 @nav-offcanvas-hover-color:                     @offcanvas-panel-link-hover-color;
 @nav-offcanvas-active-background:               darken(@offcanvas-bar-background, 10%);
-@nav-offcanvas-active-color:                    @offcanvas-panel-link-hover-color;
+@nav-offcanvas-active-color:                    @offcanvas-panel-link-color;
 @nav-offcanvas-header-color:                    @offcanvas-panel-color;
-@nav-offcanvas-divider-border:                  rgba(255,255,255,0.01);
+@nav-offcanvas-divider-border:                  darken(@offcanvas-bar-background, 50%);
 @nav-offcanvas-nested-color:                    @offcanvas-panel-link-color;
 @nav-offcanvas-nested-hover-color:              @offcanvas-panel-link-hover-color;
 
@@ -72,7 +72,7 @@
 @nav-navbar-hover-box-shadow:                   rgba(0,0,0,0.2);
 
 @nav-offcanvas-text-shadow:                     rgba(0,0,0,0.5);
-@nav-offcanvas-header-background:               lighten(@offcanvas-bar-background, 5%);
+@nav-offcanvas-header-background:               darken(@offcanvas-bar-background, 15%);
 @nav-offcanvas-divider-background:              rgba(0,0,0,0.2);
 
 

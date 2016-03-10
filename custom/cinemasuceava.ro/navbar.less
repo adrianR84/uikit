@@ -3,9 +3,7 @@
 //
 // ========================================================================
 
-
-// Variables
-// ========================================================================
+//navbar
 
 @navbar-background:                             @global-default-background;
 @navbar-color:                                  @global-color;
@@ -16,12 +14,12 @@
 @navbar-nav-line-height:                        @navbar-nav-height - 1;
 @navbar-nav-color:                              @global-color;
 @navbar-nav-font-size:                          @global-font-size;
-@navbar-nav-hover-background:                   transparent;
-@navbar-nav-hover-color:                        @global-color;
-@navbar-nav-onclick-background:                 @global-default-active-background;
+@navbar-nav-hover-background:                   lighten(@global-primary-background, 10%);
+@navbar-nav-hover-color:                        @global-contrast-color;
+@navbar-nav-onclick-background:                 @global-primary-gradient-bottom;
 @navbar-nav-onclick-color:                      @global-color;
-@navbar-nav-active-background:                  #fafafa;
-@navbar-nav-active-color:                       @global-color;
+@navbar-nav-active-background:                  darken(@global-primary-background, 10%);
+@navbar-nav-active-color:                       @global-default-active-background;
 
 @navbar-brand-font-size:                        round((@global-font-size * 1.28)); // 18px / 20px
 @navbar-brand-color:                            @global-color;
@@ -35,10 +33,10 @@
 // New
 //
 
-@navbar-border:                                 rgba(0,0,0,0.1);
-@navbar-border-bottom:                          rgba(0,0,0,0.3);
-@navbar-gradient-top:                           @global-default-gradient-top;
-@navbar-gradient-bottom:                        @global-default-gradient-bottom;
+@navbar-border:                                 @global-primary-background;
+@navbar-border-bottom:                          @global-primary-background;
+@navbar-gradient-top:                           @global-background;
+@navbar-gradient-bottom:                        lighten(@global-primary-background, 40%);
 @navbar-text-shadow:                            @global-text-shadow;
 
 @navbar-nav-hover-border:                       rgba(0,0,0,0.1);
@@ -47,6 +45,10 @@
 
 @navbar-nav-hover-box-shadow:                   rgba(0,0,0,0.1);
 @navbar-nav-onclick-box-shadow:                 rgba(0,0,0,0.1);
+
+// Variables
+// ========================================================================
+
 
 
 // Component
@@ -133,6 +135,10 @@
 
 .hook-navbar-misc() {
 
+
+    .uk-navbar-nav > li > a {
+        font-weight:bold;
+    }
     /*
      * Apply same `border-radius` as `uk-navbar`
      */

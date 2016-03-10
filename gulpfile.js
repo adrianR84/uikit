@@ -415,7 +415,7 @@ gulp.task('dist-themes', ['dist-variables'], function(done) {
 
             themes.forEach(function(theme) {
 
-                if (theme.path.match(/custom/)) return;
+                //if (theme.path.match(/custom/)) return;
 
                 var tplpath = [cpath, compname+'.'+theme.name+'.less'].join('/'),
                     csspath = ['./dist/css/components', compname+'.'+theme.name+'.css'].join('/'),
@@ -691,4 +691,97 @@ gulp.task('sublime', ['sublime-css', 'sublime-js', 'sublime-snippets'], function
         .on('end', function(){
             gulp.src("dist/sublime/tmp_*.py", {read: false}).pipe(rimraf()).on('end', done);
         });
+});
+
+
+
+
+
+gulp.task('getBowerFile', function() {
+	src = "dist/bower.json";
+  return gulp.src(src)
+    .pipe(gulp.dest('_theme/'));
+});
+
+gulp.task('getThemeJs', function() {
+		src = "dist/js/";
+		srcComp = "dist/js/components/";
+		
+    gulp.src([
+    src + "uikit.js",
+    
+    srcComp + 'slideshow.js',
+    srcComp + "slideshow-fx.js",
+    
+    srcComp + "*.js",
+    
+    '!' + srcComp + 'autocomplete.js',
+    '!' + srcComp + 'datepicker.js',
+    '!' + srcComp + 'htmleditor.js',
+    '!' + srcComp + 'nestable.js',
+    '!' + srcComp + 'pagination.js',
+    '!' + srcComp + 'notify.js',
+    '!' + srcComp + 'sortable.js',
+    '!' + srcComp + 'search.js',
+    '!' + srcComp + 'grid.js',
+    '!' + srcComp + 'grid-parallax.js',
+    '!' + srcComp + 'parallax.js',
+    '!' + srcComp + 'form-password.js',
+    '!' + srcComp + 'form-select.js',
+    '!' + srcComp + 'timepicker.js',
+    '!' + srcComp + 'upload.js',
+    
+    '!' + srcComp + "*min.js",
+    ])
+				.pipe(concat('uikit.js'))
+        .pipe(gulp.dest('_theme/js/'))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(uglify())
+        .pipe(gulp.dest('_theme/js/'));
+      
+});
+
+gulp.task('getThemeCss', function() {
+		src = "dist/css/";
+		srcComp = "dist/css/components/";
+    return gulp.src([
+    src + "*cinemasuceava.ro.css",
+    srcComp + "*cinemasuceava.ro.css",
+    
+    '!' + srcComp + 'autocomplete.cinemasuceava.ro.css',
+    '!' + srcComp + 'form-password.cinemasuceava.ro.css',
+    '!' + srcComp + 'form-select.cinemasuceava.ro.css',
+    '!' + srcComp + 'placeholder.cinemasuceava.ro.css', 
+    
+    '!' + srcComp + 'datepicker.cinemasuceava.ro.css',
+    '!' + srcComp + 'htmleditor.cinemasuceava.ro.css',
+    '!' + srcComp + 'nestable.cinemasuceava.ro.css',
+    '!' + srcComp + 'notify.cinemasuceava.ro.css',
+    '!' + srcComp + 'sortable.cinemasuceava.ro.css',
+    '!' + srcComp + 'upload.cinemasuceava.ro.css',
+    ])
+        .pipe(concat('uikit.css'))
+        .pipe(gulp.dest('_theme/css/'))
+        .pipe(minifycss({advanced:false}))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(gulp.dest('_theme/css/'));
+});
+
+gulp.task('getThemeFonts', function() {
+		src = "dist/fonts/";
+    return gulp.src(src + "*")
+        .pipe(gulp.dest('_theme/fonts/'));
+});
+
+gulp.task('deleteOldUiKit', function() {
+		dest = "../../cinemasuceava.ro/bower_components/uikit/";
+    return gulp.src(dest, {read: false})
+        .pipe(rimraf({force:true}));
+});
+
+gulp.task('getTheme', ['getBowerFile', 'getThemeJs', 'getThemeCss', 'getThemeFonts'], function() {
+		src = "_theme/**/*";
+		dest = "../../cinemasuceava.ro/bower_components/uikit/";
+    return gulp.src(src)
+         .pipe(gulp.dest(dest));
 });

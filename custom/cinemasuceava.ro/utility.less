@@ -25,12 +25,14 @@
 
 @utility-scrollable-box-border:                 @global-border;
 
+@utility-border-rounded : @global-border-radius;
 
 // Container
 // ========================================================================
 
-.hook-container() {}
-
+.hook-container() {
+max-width: @utility-container-large-max-width;
+}
 
 // Scrollable
 // ========================================================================
@@ -41,4 +43,21 @@
 // Miscellaneous
 // ========================================================================
 
-.hook-utility-misc() {}
+.hook-utility-misc() {
+
+/* Selection pseudo-element
+ ========================================================================== */
+
+::-moz-selection {
+    background: @global-primary-gradient-top;
+    color: @base-selection-color;
+    text-shadow: none;
+}
+
+::selection {
+    background: @global-primary-gradient-top;
+    color: @base-selection-color;
+    text-shadow: none;
+}
+
+}

@@ -6,15 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Documentation layout example - UIkit documentation</title>
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-        <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png"
-        >
-        <link rel="stylesheet" href="css/uikit.docs.min.css">
+        <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png">
+        <link rel="stylesheet" href="../_theme/css/uikit.css" />
 
         <script src="../vendor/jquery.js"></script>
-        <script src="js/uikit.min.js"></script>
-        <script src="../src/js/components/sticky.js"></script>
-        <script src="../src/js/components/autocomplete.js"></script>
-        <script src="../src/js/components/search.js"></script>
+        <script src="../_theme/js/uikit.js"></script>
+
+        <script src="../vendor/holder.js"></script>
 
     </head>
 
@@ -22,9 +20,11 @@
 
         <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
 
-            <nav class="uk-navbar" data-uk-sticky="{top:-50, animation: 'uk-animation-slide-top'}">
-                <a class="uk-navbar-brand uk-visible-large" href="layouts_frontpage.html">Brand</a>
-                <ul class="uk-navbar-nav uk-visible-large">
+            <nav class="uk-navbar" style="position: relative; z-index: 1000;">
+
+                <a class="uk-navbar-brand uk-visible-large" href="layouts_frontpage.html">Cinema Suceava <sub>.ro</sub></a>
+                
+                <ul class="uk-navbar-nav uk-visible-large d-search-toggle">
                     <li>
                         <a href="layouts_frontpage.html"><i class="uk-icon-home uk-icon-medium"></i></a>
                     </li>
@@ -93,24 +93,195 @@
                 </ul>
 
                 <a href="#offcanvas" class="uk-navbar-toggle uk-hidden-large" data-uk-offcanvas></a>
-                <div class="uk-navbar-brand uk-hidden-large">Brand</div>
+                <div class="uk-navbar-brand uk-hidden-large">Cinema Suceava <sub>.ro</sub></div>
 
-                <div class="uk-navbar-content uk-float-right">
+
+
+                <div class="uk-navbar-content uk-float-right uk-visible-large">
+                    <div class="navSearch" style="display: inline-block;text-align: center;">
+                        <a class="d-search-toggle" href="#" data-searchtoggle><i class="uk-icon-search uk-icon-medium"></i></a>  
+                    </div>
+
+<!--                 
                     <form class="uk-search">
                         <input class="uk-search-field" type="search" placeholder="search...">
                     </form>
+ -->
                 </div>
+
+
+                <div class="uk-form d-search d-search-toggle uk-hidden uk-visible-large" style=" position: absolute;
+    display: inline-block;
+    right: 2px;
+    top: 5px;
+    width: 400px;">
+                    <div class="uk-form-icon" style="width:100%; position: relative;">
+                        <i class="uk-icon-search"></i>
+                        <input id="search" class="dark desktop" name="s" type="search" placeholder="Type your query and press enter" style=" width:90%; padding-right: 55px;">
+                        <a class="close-search" style="      position: absolute;
+    width: 100px;      margin-left: 10px; margin-top: 5px;
+    " href="#"  data-searchtoggle><i class="uk-icon-close"></i></a>
+                    </div>
+                </div>  
+
 
             </nav>
 
 
 
+<script type="text/javascript">
+$(document).ready(function() {
+
+
+UIkit.sticky($('.uk-navbar'), {
+    top:-50, animation: 'uk-animation-slide-top'
+});
+
+$('.uk-navbar').on('inactive.uk.sticky', function(event)
+{
+   $(this).css({position:'relative'}); 
+});
+
+
+
+$(document).on('click', '[data-searchtoggle]', function(event) {
+    event.preventDefault();
+    searchToggle();
+});
+
+
+function searchToggle() {
+    $('.d-search-toggle').toggleClass('uk-hidden');
+    var $searchfield = $('#search.desktop');
+    if(!$searchfield.parents('.uk-form').hasClass('uk-hidden')) {
+        $searchfield.focus();
+        $searchfield.one('focusout', function(event) {
+            if($searchfield.val() === '') {
+                searchToggle();
+            }
+        });
+    }
+}
+
+
+$(window).on('scroll', function () {
+    if ($(window).scrollTop() > 40)
+    {
+        $(".uk-navbar").addClass('fixedHeader');
+    }
+    else
+    {
+        $(".uk-navbar").removeClass('fixedHeader');
+    }
+
+});
+
+});    
+</script>
+
+
+
             <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
-                    <h1 class="uk-heading-large">Documentation</h1>
+                    <h3 class="uk-heading-large">Documentation</h3>
                     <p class="uk-text-large">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
                 </div>
             </div>
+
+
+
+<div class="uk-thumbnail uk-thumbnail-expand uk-margin-large">
+
+            <div class="uk-margin" data-uk-slideset="{small: 2, medium: 3, large: 4, animation: 'scale', duration: 200, autoplay: true, autoplayInterval: 5000}">
+                <div class="uk-slidenav-position uk-margin">
+                    <ul class="uk-slideset uk-grid uk-flex-center">
+
+                        <li>
+                        <div class="uk-thumbnail">
+                            <figure class="uk-overlay uk-overlay-hover uk-border-rounded">
+                                <img class="uk-overlay-scale" src="holder.js/200x300/random/auto/text:2/size:100" width="400" height="600" alt="Image">
+                                <figcaption class="uk-overlay-panel uk-overlay-background uk-overlay-slide-bottom uk-overlay-bottom">
+                                    <div class="uk-panel"><div class="uk-panel-title line">Sports and Games</div><div class="uk-margin-top"><p>We have 94,000 competitions a year, worldwide.</p><ul><li><a title="Our best sport stories" href="/Stories/Sports/Sports_Stories.aspx">Our best sport stories</a>  </li><li><a title="Visit the World and Regional Games Center" href="/Games/World_and_Regional_Games_Center.aspx">International Games Center</a></li></ul></div></div>
+                                </figcaption>
+                            </figure>
+                            <div class="uk-thumbnail-caption">Nume film dfds sdfsdf sdf sdfsdfsd </div>
+                        </div>
+                        </li>
+
+
+                        <li>
+                        <div class="uk-thumbnail">
+                            <figure class="uk-overlay uk-overlay-hover uk-border-rounded">
+                                <img class="uk-overlay-scale" src="holder.js/200x300/sky/auto/text:2/size:100" width="400" height="600" alt="Image">
+                                <figcaption class="uk-overlay-panel uk-overlay-background uk-overlay-slide-bottom uk-overlay-bottom">
+                                    <div class="uk-panel"><div class="uk-panel-title line">Sports and Games</div><div class="uk-margin-top"><p>We have 94,000 competitions a year, worldwide.</p><ul><li><a title="Our best sport stories" href="/Stories/Sports/Sports_Stories.aspx">Our best sport stories</a>  </li><li><a title="Visit the World and Regional Games Center" href="/Games/World_and_Regional_Games_Center.aspx">International Games Center</a></li></ul></div></div>
+                                </figcaption>
+                            </figure>
+                            <div class="uk-thumbnail-caption">Nume film dfds sdfsdf sdf sdfsdfsd </div>
+                        </div>
+                        </li>
+
+
+                        <li>
+                        <div class="uk-thumbnail">
+                            <figure class="uk-overlay uk-overlay-hover uk-border-rounded">
+                                <img class="uk-overlay-scale" src="holder.js/200x300/sky/auto/text:2/size:100" width="400" height="600" alt="Image">
+                                <figcaption class="uk-overlay-panel uk-overlay-background uk-overlay-slide-bottom uk-overlay-bottom">
+                                    <div class="uk-panel"><div class="uk-panel-title line">Sports and Games</div><div class="uk-margin-top"><p>We have 94,000 competitions a year, worldwide.</p><ul><li><a title="Our best sport stories" href="/Stories/Sports/Sports_Stories.aspx">Our best sport stories</a>  </li><li><a title="Visit the World and Regional Games Center" href="/Games/World_and_Regional_Games_Center.aspx">International Games Center</a></li></ul></div></div>
+                                </figcaption>
+                            </figure>
+                            <div class="uk-thumbnail-caption">Nume film dfds sdfsdf sdf sdfsdfsd </div>
+                        </div>
+                        </li>
+
+
+                        <li>
+                        <div class="uk-thumbnail">
+                            <figure class="uk-overlay uk-overlay-hover uk-border-rounded">
+                                <img class="uk-overlay-scale" src="holder.js/200x300/sky/auto/text:2/size:100" width="400" height="600" alt="Image">
+                                <figcaption class="uk-overlay-panel uk-overlay-background uk-overlay-slide-bottom uk-overlay-bottom">
+                                    <div class="uk-panel"><div class="uk-panel-title line">Sports and Games</div><div class="uk-margin-top"><p>We have 94,000 competitions a year, worldwide.</p><ul><li><a title="Our best sport stories" href="/Stories/Sports/Sports_Stories.aspx">Our best sport stories</a>  </li><li><a title="Visit the World and Regional Games Center" href="/Games/World_and_Regional_Games_Center.aspx">International Games Center</a></li></ul></div></div>
+                                </figcaption>
+                            </figure>
+                            <div class="uk-thumbnail-caption">Nume film dfds sdfsdf sdf sdfsdfsd </div>
+                        </div>
+                        </li>
+
+                        <li>
+                        <div class="uk-thumbnail">
+                            <figure class="uk-overlay uk-overlay-hover uk-border-rounded">
+                                <img class="uk-overlay-scale" src="holder.js/200x300/sky/auto/text:2/size:100" width="400" height="600" alt="Image">
+                                <figcaption class="uk-overlay-panel uk-overlay-background uk-overlay-slide-bottom uk-overlay-bottom">
+                                    <div class="uk-panel"><div class="uk-panel-title line">Sports and Games</div><div class="uk-margin-top"><p>We have 94,000 competitions a year, worldwide.</p><ul><li><a title="Our best sport stories" href="/Stories/Sports/Sports_Stories.aspx">Our best sport stories</a>  </li><li><a title="Visit the World and Regional Games Center" href="/Games/World_and_Regional_Games_Center.aspx">International Games Center</a></li></ul></div></div>
+                                </figcaption>
+                            </figure>
+                            <div class="uk-thumbnail-caption">Nume film dfds sdfsdf sdf sdfsdfsd </div>
+                        </div>
+                        </li>
+
+                        <li>
+                        <div class="uk-thumbnail">
+                            <figure class="uk-overlay uk-overlay-hover uk-border-rounded">
+                                <img class="uk-overlay-scale" src="holder.js/200x300/sky/auto/text:2/size:100" width="400" height="600" alt="Image">
+                                <figcaption class="uk-overlay-panel uk-overlay-background uk-overlay-slide-bottom uk-overlay-bottom">
+                                    <div class="uk-panel"><div class="uk-panel-title line">Sports and Games</div><div class="uk-margin-top"><p>We have 94,000 competitions a year, worldwide.</p><ul><li><a title="Our best sport stories" href="/Stories/Sports/Sports_Stories.aspx">Our best sport stories</a>  </li><li><a title="Visit the World and Regional Games Center" href="/Games/World_and_Regional_Games_Center.aspx">International Games Center</a></li></ul></div></div>
+                                </figcaption>
+                            </figure>
+                            <div class="uk-thumbnail-caption">Nume film dfds sdfsdf sdf sdfsdfsd </div>
+                        </div>
+                        </li>                        
+
+
+                    </ul>
+                    <a href="#" class="uk-slidenav uk-slidenav-previous" data-uk-slideset-item="previous"></a>
+                    <a href="#" class="uk-slidenav uk-slidenav-next" data-uk-slideset-item="next"></a>
+                </div>
+                <ul class="uk-slideset-nav uk-dotnav uk-flex-center"></ul>
+            </div>
+
+</div>
+
+
 
             <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-medium-3-4">
@@ -146,7 +317,7 @@
 
                     <h3>Example</h3>
 
-                    <div class="uk-grid" data-uk-grid-margin>
+                    <div class="uk-grid uk-grid-small" data-uk-grid-margin>
                         <div class="uk-width-medium-1-3">
                             <div class="uk-panel uk-panel-box">
                                 <h3 class="uk-panel-title">Title</h3>
@@ -165,18 +336,39 @@
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                             </div>
                         </div>
+
+
+                        <div class="uk-width-medium-1-3">
+                            <div class="uk-panel uk-panel-box">
+                                <h3 class="uk-panel-title">Title</h3>
+                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            </div>
+                        </div>
+                        <div class="uk-width-medium-1-3">
+                             <div class="uk-panel uk-panel-box">
+                                <h3 class="uk-panel-title">Title</h3>
+                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            </div>
+                        </div>
+                        <div class="uk-width-medium-1-3">
+                             <div class="uk-panel uk-panel-box">
+                                <h3 class="uk-panel-title">Title</h3>
+                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            </div>
+                        </div>
+
                     </div>
 
                     <h4>Markup</h4>
 
-<pre><code>&lt;div class="my-class-1"&gt;
-    &lt;div class="my-class-2"&gt;
-        &lt;div class="my-class-3"&gt;
-            &lt;h3&gt;...&lt;/h3&gt;
-            ...
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+                    <pre><code>&lt;div class="my-class-1"&gt;
+                        &lt;div class="my-class-2"&gt;
+                            &lt;div class="my-class-3"&gt;
+                                &lt;h3&gt;...&lt;/h3&gt;
+                                ...
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;</code></pre>
 
                     <p><span class="uk-badge">NOTE</span> Lorem ipsum <a href="#">dolor sit amet</a>, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.</p>
 
@@ -542,7 +734,7 @@
 
             <div class="uk-offcanvas-bar">
 
-                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav>
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
                     <li><a href="">Item</a></li>
                     <li class="uk-active"><a href="">Active</a></li>
 

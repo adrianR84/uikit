@@ -58,6 +58,7 @@
     background-image: -webkit-linear-gradient(top, @badge-primary-gradient-top, @badge-primary-gradient-bottom);
     background-image: linear-gradient(to bottom, @badge-primary-gradient-top, @badge-primary-gradient-bottom);
     border-radius: 2px;
+    padding: 1px 5px;
     text-shadow: 0 -1px 0 @badge-text-shadow;
 }
 
@@ -80,4 +81,8 @@
 // Miscellaneous
 // ========================================================================
 
-.hook-badge-misc() {}
+.hook-badge-misc() {
+.uk-badge-notification {
+    padding: 0 @badge-padding-horizontal;
+}
+}
