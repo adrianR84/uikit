@@ -1,6 +1,47 @@
 # Changelog
 
 
+### WIP
+
+  - Fixed Htmleditor fullscreen mode in fixed container
+
+### 2.26.3 (May 12, 2016)
+
+  - Added UIkit.Utils.throttle helper function
+  - Updated icon component to FontAwesome 4.6.0
+  - Updated list button action in html mode (html editor)
+  - Removed default ```transition-property: all``` for all uk-form inputs
+  - Fixed fullscreen videos on iOS + lightbox
+  - Fixed links in sortables + nestables on iOS/Windows mobile
+
+### 2.26.2 (April 06, 2016)
+  - Added iframe support for lightbox component
+  - Added observe option to data-uk-grid-margin + data-uk-grid-match
+  - Added all data-uk-* js components should now auto initialize after inserted into DOM
+  - Updated sortable behavior with handleClass option
+  - Updated sortable + nestable serialize
+  - Removed data-uk-observe
+  - Fixed flip dropdown modifier for autocomplete component
+  - Fixed scrollspynav active state (revert)
+  - Fixed form-select component with input as target
+
+### 2.26.1 (March 30, 2016)
+  - Removed translateZ(0) in sticky component to avoid stacking context
+  - Removed clearfix fix in flex component
+
+### 2.26.0 (March 29, 2016)
+  - Added uk-grid-large class
+  - Added support for CSS filter properties in parallax component
+  - Added responsiveness to audio, canvas, svg and video in base component
+  - Made flex component more robust when used with clearfix
+  - Improved htmleditor `replaceInPreview` function
+  - Fixed scrollspynav active state
+  - Fixed uk-modal-spinner animation
+  - Fixed uk-row-first when using pull/push or flex-order classes
+  - Fixed uk-grid-margin when using flex-order classes
+  - Fixed uk-overflow-container adjustments on resize
+  - Fixed modal listens for `changed.uk.dom` event
+
 ### 2.25.0 (February 17, 2016)
   - Added grid parallax component
   - Added new grid-width classes to grid component
