@@ -7,10 +7,10 @@
  * 2. Prevents iOS text size adjust after orientation change, without disabling user zoom
  * 3. Style
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab&subset=latin,latin-ext);
 html {
   /* 1 */
-  font: normal 14px / 18px 'Droid Serif', Arial, sans-serif;
+  font: normal 14px / 18px 'Roboto Slab', serif;
   /* 2 */
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
@@ -222,7 +222,7 @@ h4,
 h5,
 h6 {
   margin: 0 0 15px 0;
-  font-family: 'Droid Serif', Arial, sans-serif;
+  font-family: 'Roboto Slab', serif;
   font-weight: normal;
   color: #000;
   text-transform: none;
@@ -2051,7 +2051,7 @@ html:not(.uk-touch) .uk-nav-offcanvas ul a:hover {
   /* 2 */
   color: #000;
   font-size: 14px;
-  font-family: 'Droid Serif', Arial, sans-serif;
+  font-family: 'Roboto Slab', serif;
   font-weight: normal;
   margin-top: -1px;
   margin-left: -1px;
@@ -2557,6 +2557,10 @@ html:not(.uk-touch) .uk-nav-offcanvas ul a:hover {
 }
 .uk-pagination-right {
   text-align: right;
+}
+.uk-pagination > .uk-active > a {
+  background: #c63b49;
+  color: #fff;
 }
 /* ========================================================================
    Component: Tab
@@ -7973,6 +7977,7 @@ a.uk-thumbnail:focus {
   max-width: 980px;
   padding: 0 25px;
   max-width: 1200px;
+  padding: 0 15px;
 }
 /* Large screen and bigger */
 @media (min-width: 1220px) {
@@ -9010,7 +9015,6 @@ a.uk-thumbnail:focus {
  ========================================================================== */
 /* Sub-object: `uk-accordion-title`
  ========================================================================== */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-accordion-title {
   margin-top: 0;
   margin-bottom: 15px;
@@ -9059,7 +9063,6 @@ a.uk-thumbnail:focus {
  * 1. Gutter
  * 2. Remove default list style
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-dotnav {
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -9205,7 +9208,6 @@ a.uk-thumbnail:focus {
  * 4. Remove default style
  * 5. Fix black background on iOS
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-form input[type="radio"],
 .uk-form input[type="checkbox"] {
   /* 1 */
@@ -9288,7 +9290,6 @@ a.uk-thumbnail:focus {
  * 2. Create position context for dropdowns
  * 3. Clip content
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-form-file {
   /* 1 */
   display: inline-block;
@@ -9329,7 +9330,6 @@ a.uk-thumbnail:focus {
  * 1. Clearing
  * 2. Vertical alignment if text is used
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-progress {
   box-sizing: border-box;
   height: 20px;
@@ -9449,7 +9449,6 @@ a.uk-thumbnail:focus {
  * 1. Create position context for dropdowns
  * 2. Needed for `form` element
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-search {
   display: inline-block;
   /* 1 */
@@ -9649,7 +9648,6 @@ a.uk-thumbnail:focus {
  * 2. Dimension
  * 3. Style
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-slidenav {
   /* 1 */
   display: inline-block;
@@ -9761,7 +9759,6 @@ a.uk-thumbnail:focus {
  * 2. Create stacking context to prevent z-index issues with other components
  * 3. Deactivate browser history navigation in IE11
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-slider {
   /* 1 */
   position: relative;
@@ -9857,7 +9854,6 @@ a.uk-thumbnail:focus {
  * 5. Clip child elements
  * 6. Deactivate browser history navigation in IE11
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-slideshow {
   /* 1 */
   position: relative;
@@ -10004,7 +10000,6 @@ a.uk-thumbnail:focus {
 /*
  * 1. More robust if padding and border are used
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 [data-uk-sticky].uk-active {
   z-index: 980;
   /* 1 */
@@ -10046,7 +10041,6 @@ a.uk-thumbnail:focus {
  * 3. Set dimensions
  * 4. Set style
  */
-@import url(https://fonts.googleapis.com/css?family=Droid+Serif);
 .uk-tooltip {
   /* 1 */
   display: none;
