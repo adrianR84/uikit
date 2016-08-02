@@ -82,7 +82,17 @@
 // ========================================================================
 
 .hook-badge-misc() {
-.uk-badge-notification {
-    padding: 0 @badge-padding-horizontal;
-}
+
+	.uk-badge-notification {
+			padding: 0 @badge-padding-horizontal;
+	}
+
+	.uk-badge-grey {
+			background-color: @global-default-gradient-bottom;
+			background-image: -webkit-linear-gradient(top, @global-default-gradient-top, @global-default-gradient-bottom);
+			background-image: linear-gradient(to bottom, @global-default-gradient-top, @global-default-gradient-bottom);
+			color: @global-color;
+	}
+	a.uk-badge-grey:hover { color: @global-color; }
+	
 }
