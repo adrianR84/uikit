@@ -697,17 +697,26 @@ gulp.task('sublime', ['sublime-css', 'sublime-js', 'sublime-snippets'], function
 
 
 
+/*========================================
+=            CinemaSuceava.ro            =
+========================================*/
 
-gulp.task('getBowerFile', function() {
-	src = "dist/bower.json";
-  return gulp.src(src)
-    .pipe(gulp.dest('_theme/'));
+(function() {
+
+var themeName = 'cinemasuceava.ro';
+var destFolder = '_theme/' + themeName + '/';
+
+gulp.task('getBowerFile-' + themeName, function() {
+    src = "dist/bower.json";
+    return gulp.src(src)
+        .pipe(gulp.dest(destFolder));
 });
 
-gulp.task('getThemeJs', function() {
-		src = "dist/js/";
-		srcComp = "dist/js/components/";
-		
+
+gulp.task('getThemeJs-' + themeName, function() {
+    src = "dist/js/";
+    srcComp = "dist/js/components/";
+        
     gulp.src([
     src + "uikit.js",
     
@@ -724,6 +733,7 @@ gulp.task('getThemeJs', function() {
     '!' + srcComp + 'notify.js',
     '!' + srcComp + 'sortable.js',
     '!' + srcComp + 'search.js',
+    '!' + srcComp + 'sticky.js',
     '!' + srcComp + 'grid.js',
     '!' + srcComp + 'grid-parallax.js',
     '!' + srcComp + 'parallax.js',
@@ -731,58 +741,158 @@ gulp.task('getThemeJs', function() {
     '!' + srcComp + 'form-select.js',
     '!' + srcComp + 'timepicker.js',
     '!' + srcComp + 'upload.js',
+
     
     '!' + srcComp + "*min.js",
     ])
-				.pipe(concat('uikit.js'))
-        .pipe(gulp.dest('_theme/js/'))
+        .pipe(concat('uikit.js'))
+        .pipe(gulp.dest(destFolder + 'js/'))
         .pipe(rename({ suffix: '.min' }))
         .pipe(uglify())
-        .pipe(gulp.dest('_theme/js/'));
+        .pipe(gulp.dest(destFolder + 'js/'));
       
 });
 
-gulp.task('getThemeCss', function() {
-		src = "dist/css/";
-		srcComp = "dist/css/components/";
+gulp.task('getThemeCss-' + themeName, function() {
+    src = "dist/css/";
+    srcComp = "dist/css/components/";
+
     return gulp.src([
-    src + "*cinemasuceava.ro.css",
-    srcComp + "*cinemasuceava.ro.css",
+    src + "*" + themeName + ".css",
+    srcComp + "*" + themeName + ".css",
     
-    '!' + srcComp + 'autocomplete.cinemasuceava.ro.css',
-    '!' + srcComp + 'form-password.cinemasuceava.ro.css',
-    '!' + srcComp + 'form-select.cinemasuceava.ro.css',
-    '!' + srcComp + 'placeholder.cinemasuceava.ro.css', 
+    '!' + srcComp + 'autocomplete.' + themeName + '.css',
+    '!' + srcComp + 'form-password.' + themeName + '.css',
+    '!' + srcComp + 'form-select.' + themeName + '.css',
+    '!' + srcComp + 'placeholder.' + themeName + '.css', 
     
-    '!' + srcComp + 'datepicker.cinemasuceava.ro.css',
-    '!' + srcComp + 'htmleditor.cinemasuceava.ro.css',
-    '!' + srcComp + 'nestable.cinemasuceava.ro.css',
-    '!' + srcComp + 'notify.cinemasuceava.ro.css',
-    '!' + srcComp + 'sortable.cinemasuceava.ro.css',
-    '!' + srcComp + 'upload.cinemasuceava.ro.css',
+    '!' + srcComp + 'datepicker.' + themeName + '.css',
+    '!' + srcComp + 'htmleditor.' + themeName + '.css',
+    '!' + srcComp + 'nestable.' + themeName + '.css',
+    '!' + srcComp + 'notify.' + themeName + '.css',
+    '!' + srcComp + 'sortable.' + themeName + '.css',
+    '!' + srcComp + 'sticky.' + themeName + '.css',
+    '!' + srcComp + 'upload.' + themeName + '.css',
     ])
         .pipe(concat('uikit.css'))
-        .pipe(gulp.dest('_theme/css/'))
+        .pipe(gulp.dest(destFolder + 'css/'))
         .pipe(minifycss({advanced:false}))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('_theme/css/'));
+        .pipe(gulp.dest(destFolder + 'css/'));
 });
 
-gulp.task('getThemeFonts', function() {
-		src = "dist/fonts/";
+gulp.task('getThemeFonts-' + themeName, function() {
+    src = "dist/fonts/";
     return gulp.src(src + "*")
-        .pipe(gulp.dest('_theme/fonts/'));
+        .pipe(gulp.dest(destFolder + 'fonts/'));
 });
 
-gulp.task('deleteOldUiKit', function() {
-		dest = "../../cinemasuceava.ro/bower_components/uikit/";
+gulp.task('deleteOldUiKit-' + themeName, function() {
+    dest = "../../" + themeName + "/bower_components/uikit/";
     return gulp.src(dest, {read: false})
         .pipe(rimraf({force:true}));
 });
 
-gulp.task('getTheme', ['getBowerFile', 'getThemeJs', 'getThemeCss', 'getThemeFonts'], function() {
-		src = "_theme/**/*";
-		dest = "../../cinemasuceava.ro/bower_components/uikit/";
+gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' + themeName, 'getThemeCss-' + themeName, 'getThemeFonts-' + themeName], function() {
+    src = destFolder + "**/*";
+    dest = "../../" + themeName + "/bower_components/uikit/";
     return gulp.src(src)
          .pipe(gulp.dest(dest));
 });
+
+})();
+
+
+/*=====  End of CinemaSuceava.ro  ======*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*==========================================
+=            AdrianRomega.co.uk            =
+==========================================*/
+
+(function() {
+
+// change only themeName variable
+var themeName = 'adrianromega.co.uk';
+
+
+var destFolder = '_theme/' + themeName + '/';
+
+gulp.task('getBowerFile-' + themeName, function() {
+    src = "dist/bower.json";
+    return gulp.src(src)
+        .pipe(gulp.dest(destFolder));
+});
+
+
+gulp.task('getThemeJs-' + themeName, function() {
+    src = "dist/js/";
+    srcComp = "dist/js/components/";
+        
+    gulp.src([
+    src + "uikit.js",
+    
+    srcComp + 'parallax.js',
+    srcComp + 'lightbox.js',
+    
+    '!' + srcComp + "*min.js",
+    ])
+        .pipe(concat('uikit.js'))
+        .pipe(gulp.dest(destFolder + 'js/'))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(uglify())
+        .pipe(gulp.dest(destFolder + 'js/'));
+      
+});
+
+gulp.task('getThemeCss-' + themeName, function() {
+    src = "dist/css/";
+    srcComp = "dist/css/components/";
+
+    return gulp.src([
+    src + "*" + themeName + ".css",
+
+    srcComp + 'progress.' + themeName + ".css",
+    ])
+        .pipe(concat('uikit.css'))
+        .pipe(gulp.dest(destFolder + 'css/'))
+        .pipe(minifycss({advanced:false}))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(gulp.dest(destFolder + 'css/'));
+});
+
+gulp.task('getThemeFonts-' + themeName, function() {
+    src = "dist/fonts/";
+    return gulp.src(src + "*")
+        .pipe(gulp.dest(destFolder + 'fonts/'));
+});
+
+gulp.task('deleteOldUiKit-' + themeName, function() {
+    dest = "../../" + themeName + "/bower_components/uikit/";
+    return gulp.src(dest, {read: false})
+        .pipe(rimraf({force:true}));
+});
+
+gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' + themeName, 'getThemeCss-' + themeName, 'getThemeFonts-' + themeName], function() {
+    src = destFolder + "**/*";
+    dest = "../../" + themeName + "/bower_components/uikit/";
+    return gulp.src(src)
+         .pipe(gulp.dest(dest));
+});
+
+})();
+
+/*=====  End of AdrianRomega.co.uk  ======*/
