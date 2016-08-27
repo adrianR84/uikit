@@ -37,10 +37,35 @@
 @form-icon-color:                               @global-muted-color;
 
 
+/*================================
+=            modified            =
+================================*/
+
+@form-border:                                   lighten(@global-border, 20%);
+
+@form-focus-border:                             darken(@global-primary-background,20%);
+@form-focus-background:                         @form-background;
+
+@form-danger-border:                            @global-danger-background;
+@form-danger-background:                        fade(lighten(@global-danger-background, 40%), 10%);
+@form-danger-color:                             @global-danger-background;
+
+@form-success-border:                           @global-success-background;
+@form-success-background:                       fade(lighten(@global-success-background, 40%), 10%);
+@form-success-color:                            @global-success-background;
+
+@form-disabled-border:                          @global-muted-color;
+@form-disabled-background:                      fade(#f5f5f5, 50%);
+@form-disabled-color:                           #999;
+
+/*=====  End of modified  ======*/
+
+
+
 // Component
 // ========================================================================
 
-.hook-form() { border-radius: @global-border-radius; }
+.hook-form() { border:0px; border-bottom:@form-border-width solid @form-border; }
 
 // Focus state
 .hook-form-focus() {}
@@ -59,7 +84,7 @@
 // Error state
 //
 
-.hook-form-danger() {}
+.hook-form-danger() { }
 
 //
 // Success state

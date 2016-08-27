@@ -76,6 +76,19 @@
 @nav-offcanvas-divider-background:              rgba(0,0,0,0.2);
 
 
+/*================================
+=            modified            =
+================================*/
+
+@nav-side-hover-background:                     lighten(@global-primary-background, 15%);
+@nav-dropdown-hover-background:                 lighten(@global-primary-background, 15%);
+@nav-navbar-hover-background:                   lighten(@global-primary-background, 15%);
+
+
+/*=====  End of modified  ======*/
+
+
+
 // Sub-object: `uk-nav-header`
 // ========================================================================
 
@@ -112,13 +125,13 @@
 // Hover
 .hook-nav-side-hover() {
     box-shadow: inset 0 0 1px rgba(0,0,0,0.1);
-    text-shadow: 0 -1px 0 @nav-side-hover-text-shadow;
+    //text-shadow: 0 -1px 0 @nav-side-hover-text-shadow;
 }
 
 // Active
 .hook-nav-side-active() {
     box-shadow: inset 0 2px 4px @nav-side-active-box-shadow;
-    text-shadow: 0 -1px 0 @nav-side-active-text-shadow;
+    //text-shadow: 0 -1px 0 @nav-side-active-text-shadow;
 }
 
 //
@@ -146,7 +159,7 @@
 // Hover
 .hook-nav-dropdown-hover() {
     box-shadow: inset 0 2px 4px @nav-dropdown-hover-box-shadow;
-    text-shadow: 0 -1px 0 @nav-dropdown-hover-text-shadow;
+    //text-shadow: 0 -1px 0 @nav-dropdown-hover-text-shadow;
 }
 
 //
@@ -174,7 +187,7 @@
 // Hover
 .hook-nav-navbar-hover() {
     box-shadow: inset 0 2px 4px @nav-navbar-hover-box-shadow;
-    text-shadow: 0 -1px 0 @nav-navbar-hover-text-shadow;
+    //text-shadow: 0 -1px 0 @nav-navbar-hover-text-shadow;
 }
 
 //

@@ -8,7 +8,7 @@
 // ========================================================================
 
 @panel-title-margin-bottom:                     @global-margin;
-@panel-title-font-size:                         round((@global-font-size * 1.28)); // 18px / 20px
+@panel-title-font-size:                         round((@global-font-size * 1.1)); // 18px / 20px
 @panel-title-line-height:                       round((@panel-title-font-size * 1.32)); // 24px / 26px
 @panel-title-color:                             @global-color;
 
@@ -49,6 +49,18 @@
 =            modified            =
 ================================*/
 
+@panel-title-font-weight:                       bold;
+
+
+@panel-box-primary-background:                  @global-primary-background;
+@panel-box-primary-color:                       @global-contrast-color;
+@panel-box-primary-hover-color:                 @global-contrast-color;
+@panel-box-primary-title-color:                 @global-contrast-color;
+
+@panel-box-secondary-background:                #fff;
+@panel-box-secondary-color:                     @global-color;
+@panel-box-secondary-hover-color:               @panel-box-secondary-color;
+@panel-box-secondary-title-color:               @panel-box-secondary-color;
 
 /*=====  End of modified  ======*/
 
@@ -116,6 +128,10 @@
         overflow: hidden;
         // Fixed `overflow: hidden` to be ignored with border-radius and CSS transforms in Webkit
         -webkit-transform: translateZ(0);
+    }
+
+    .uk-panel-box-primary{
+        a { color: @global-muted-color;}
     }
 
 }

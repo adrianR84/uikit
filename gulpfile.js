@@ -846,7 +846,7 @@ gulp.task('getThemeJs-' + themeName, function() {
     src + "uikit.js",
     
     srcComp + 'parallax.js',
-    srcComp + 'lightbox.js',
+    //srcComp + 'lightbox.js',
     
     '!' + srcComp + "*min.js",
     ])
@@ -866,6 +866,7 @@ gulp.task('getThemeCss-' + themeName, function() {
     src + "*" + themeName + ".css",
 
     srcComp + 'progress.' + themeName + ".css",
+    srcComp + 'form-advanced.' + themeName + ".css",
     ])
         .pipe(concat('uikit.css'))
         .pipe(gulp.dest(destFolder + 'css/'))
