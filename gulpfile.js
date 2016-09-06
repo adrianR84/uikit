@@ -830,6 +830,7 @@ var themeName = 'adrianromega.co.uk';
 
 
 var destFolder = '_theme/' + themeName + '/';
+var destFolderProject = "../../" + themeName;
 
 gulp.task('getBowerFile-' + themeName, function() {
     src = "dist/bower.json";
@@ -843,10 +844,25 @@ gulp.task('getThemeJs-' + themeName, function() {
     srcComp = "dist/js/components/";
         
     gulp.src([
-    src + "uikit.js",
     
-    srcComp + 'parallax.js',
+    src + "core/*.js",
+    '!' + src + "core/alert.js",
+    '!' + src + "core/button.js",
+    '!' + src + "core/cover.js",
+    '!' + src + "core/switcher.js",
+    '!' + src + "core/tab.js",
+    '!' + src + "core/toggle.js",
+    '!' + src + "core/nav.js",
+    '!' + src + "core/dropdown.js",
+
+    '!' + src + "core/*min.js",
+
+
+    //src + "uikit.js",
+    //srcComp + 'parallax.js',
     //srcComp + 'lightbox.js',
+    //
+    
     
     '!' + srcComp + "*min.js",
     ])
@@ -866,7 +882,7 @@ gulp.task('getThemeCss-' + themeName, function() {
     src + "*" + themeName + ".css",
 
     srcComp + 'progress.' + themeName + ".css",
-    srcComp + 'form-advanced.' + themeName + ".css",
+    //srcComp + 'form-advanced.' + themeName + ".css",
     ])
         .pipe(concat('uikit.css'))
         .pipe(gulp.dest(destFolder + 'css/'))
@@ -887,9 +903,19 @@ gulp.task('deleteOldUiKit-' + themeName, function() {
         .pipe(rimraf({force:true}));
 });
 
-gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' + themeName, 'getThemeCss-' + themeName, 'getThemeFonts-' + themeName], function() {
+gulp.task('getVars-' + themeName, function() {
+
+    var src = 'custom/' + themeName + '/variables.less';
+    var dest = destFolderProject + "/site/_cssSrc/_less/";
+    return gulp.src(src)
+         .pipe(rename('_variables.less'))
+         .pipe(gulp.dest(dest));
+
+});
+
+gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' + themeName, 'getThemeCss-' + themeName, 'getThemeFonts-' + themeName, 'getVars-' + themeName], function() {
     src = destFolder + "**/*";
-    dest = "../../" + themeName + "/bower_components/uikit/";
+    dest = destFolderProject + "/bower_components/uikit/";
     return gulp.src(src)
          .pipe(gulp.dest(dest));
 });

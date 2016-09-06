@@ -6,21 +6,21 @@
 .hook-animation-misc() {
     
     /* auto generated classes for animation time and delay */
-    @iterations: 10;
+    @iterations: 6;
     .loopingClass (@index) when (@index >= 1) {
       @number: (@index * 1);
+      @numberInt: floor((@number / 2));
+      @numberRest: mod(@number, 2) * 5;
       
-        .uk-animation-@{number} {
-            -webkit-animation-duration: @number * 1s;
-            animation-duration: @number * 1s;
+        .uk-animation-@{numberInt}-@{numberRest} {
+            -webkit-animation-duration: @number * 0.5s;
+            animation-duration: @number * 0.5s;
         } 
 
-        
-        .uk-animation-delay-@{number} {
-            -webkit-animation-delay: @number * 1s;
-            animation-delay: @number * 1s;
+        .uk-animation-delay-@{numberInt}-@{numberRest} {
+            -webkit-animation-delay: @number * 0.5s;
+            animation-delay: @number * 0.5s;
         }
-   
         
         .loopingClass(@index - 1);
     }
