@@ -906,7 +906,7 @@ gulp.task('deleteOldUiKit-' + themeName, function() {
 gulp.task('getVars-' + themeName, function() {
 
     var src = 'custom/' + themeName + '/variables.less';
-    var dest = destFolderProject + "/site/_cssSrc/_less/";
+    var dest = destFolderProject + "/site/src/_cssSrc/_less/";
     return gulp.src(src)
          .pipe(rename('_variables.less'))
          .pipe(gulp.dest(dest));
