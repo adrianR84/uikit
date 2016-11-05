@@ -809,16 +809,6 @@ gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' +
 
 
 
-
-
-
-
-
-
-
-
-
-
 /*==========================================
 =            AdrianRomega.co.uk            =
 ==========================================*/
@@ -857,14 +847,8 @@ gulp.task('getThemeJs-' + themeName, function() {
 
     '!' + src + "core/*min.js",
 
-
-    //src + "uikit.js",
-    //srcComp + 'parallax.js',
-    //srcComp + 'lightbox.js',
-    //
-    
-    
-    '!' + srcComp + "*min.js",
+    srcComp + 'slideshow.js',
+    //srcComp + "slideshow-fx.js"
     ])
         .pipe(concat('uikit.js'))
         .pipe(gulp.dest(destFolder + 'js/'))
@@ -881,8 +865,11 @@ gulp.task('getThemeCss-' + themeName, function() {
     return gulp.src([
     src + "*" + themeName + ".css",
 
+    
+    srcComp + 'dotnav.' + themeName + ".css",
+    srcComp + 'slidenav.' + themeName + ".css",
     srcComp + 'progress.' + themeName + ".css",
-    //srcComp + 'form-advanced.' + themeName + ".css",
+    srcComp + 'slideshow.' + themeName + ".css",
     ])
         .pipe(concat('uikit.css'))
         .pipe(gulp.dest(destFolder + 'css/'))
@@ -923,3 +910,117 @@ gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' +
 })();
 
 /*=====  End of AdrianRomega.co.uk  ======*/
+
+
+/*==========================================
+=            teatrulmateivisniec.ro        =
+==========================================*/
+
+(function() {
+
+// change only themeName variable
+var themeName = 'teatrulmateivisniec.ro';
+
+
+var destFolder = '_theme/' + themeName + '/';
+var destFolderProject = "../../" + themeName;
+
+gulp.task('getBowerFile-' + themeName, function() {
+    src = "dist/bower.json";
+    return gulp.src(src)
+        .pipe(gulp.dest(destFolder));
+});
+
+
+gulp.task('getThemeJs-' + themeName, function() {
+    src = "dist/js/";
+    srcComp = "dist/js/components/";
+        
+    gulp.src([
+    
+    src + "core/*.js",
+    '!' + src + "core/alert.js",
+    '!' + src + "core/button.js",
+    '!' + src + "core/cover.js",
+    //'!' + src + "core/switcher.js",
+    '!' + src + "core/scrollspy.js",
+    //'!' + src + "core/tab.js",
+    '!' + src + "core/toggle.js",
+    //'!' + src + "core/nav.js",
+    //'!' + src + "core/dropdown.js",
+
+    '!' + src + "core/*min.js",
+
+    srcComp + 'slideshow.js',
+    //srcComp + "slideshow-fx.js",
+    srcComp + 'tooltip.js',
+    srcComp + 'lightbox.js',
+    srcComp + 'slideset.js',
+
+    //srcComp + 'accordion.js',
+    
+    ])
+        .pipe(concat('uikit.js'))
+        .pipe(gulp.dest(destFolder + 'js/'))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(uglify())
+        .pipe(gulp.dest(destFolder + 'js/'));
+      
+});
+
+gulp.task('getThemeCss-' + themeName, function() {
+    src = "dist/css/";
+    srcComp = "dist/css/components/";
+
+    return gulp.src([
+    src + "*" + themeName + ".css",
+
+    
+    srcComp + 'tooltip.' + themeName + ".css",
+    srcComp + 'dotnav.' + themeName + ".css",
+    srcComp + 'slidenav.' + themeName + ".css",
+    srcComp + 'progress.' + themeName + ".css",
+    srcComp + 'slideshow.' + themeName + ".css",
+
+    //srcComp + 'accordion.' + themeName + ".css",
+    ])
+        .pipe(concat('uikit.css'))
+        .pipe(gulp.dest(destFolder + 'css/'))
+        .pipe(minifycss({advanced:false}))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(gulp.dest(destFolder + 'css/'));
+});
+
+gulp.task('getThemeFonts-' + themeName, function() {
+    src = "dist/fonts/";
+    return gulp.src(src + "*")
+        .pipe(gulp.dest(destFolder + 'fonts/'));
+});
+
+gulp.task('deleteOldUiKit-' + themeName, function() {
+    dest = "../../" + themeName + "/bower_components/uikit/";
+    return gulp.src(dest, {read: false})
+        .pipe(rimraf({force:true}));
+});
+
+gulp.task('getVars-' + themeName, function() {
+
+    var src = 'custom/' + themeName + '/variables.less';
+    var dest = destFolderProject + "/site/site/templates/_cssSrc/_less/";
+    return gulp.src(src)
+         .pipe(rename('_variables.less'))
+         .pipe(gulp.dest(dest));
+
+});
+
+gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' + themeName, 'getThemeCss-' + themeName, 'getThemeFonts-' + themeName, 'getVars-' + themeName], function() {
+    src = destFolder + "**/*";
+    dest = destFolderProject + "/bower_components/uikit/";
+    return gulp.src(src)
+         .pipe(gulp.dest(dest));
+});
+
+})();
+
+/*=====  End of teatrulmateivisniec.ro  ======*/
+

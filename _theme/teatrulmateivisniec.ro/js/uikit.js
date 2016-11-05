@@ -824,6 +824,536 @@
 
     "use strict";
 
+    var active = false, hoverIdle, flips = {
+        x: {
+            "bottom-left"   : 'bottom-right',
+            "bottom-right"  : 'bottom-left',
+            "bottom-center" : 'bottom-center',
+            "top-left"      : 'top-right',
+            "top-right"     : 'top-left',
+            "top-center"    : 'top-center',
+            "left-top"      : 'right-top',
+            "left-bottom"   : 'right-bottom',
+            "left-center"   : 'right-center',
+            "right-top"     : 'left-top',
+            "right-bottom"  : 'left-bottom',
+            "right-center"  : 'left-center'
+        },
+        y: {
+            "bottom-left"   : 'top-left',
+            "bottom-right"  : 'top-right',
+            "bottom-center" : 'top-center',
+            "top-left"      : 'bottom-left',
+            "top-right"     : 'bottom-right',
+            "top-center"    : 'bottom-center',
+            "left-top"      : 'left-bottom',
+            "left-bottom"   : 'left-top',
+            "left-center"   : 'left-center',
+            "right-top"     : 'right-bottom',
+            "right-bottom"  : 'right-top',
+            "right-center"  : 'right-center'
+        },
+        xy: {
+            "bottom-left"   : 'top-right',
+            "bottom-right"  : 'top-left',
+            "bottom-center" : 'top-center',
+            "top-left"      : 'bottom-right',
+            "top-right"     : 'bottom-left',
+            "top-center"    : 'bottom-center',
+            "left-top"      : 'right-bottom',
+            "left-bottom"   : 'right-top',
+            "left-center"   : 'right-center',
+            "right-top"     : 'left-bottom',
+            "right-bottom"  : 'left-top',
+            "right-center"  : 'left-center'
+        }
+    };
+
+    UI.component('dropdown', {
+
+        defaults: {
+           mode            : 'hover',
+           pos             : 'bottom-left',
+           offset          : 0,
+           remaintime      : 800,
+           justify         : false,
+           boundary        : UI.$win,
+           delay           : 0,
+           dropdownSelector: '.uk-dropdown,.uk-dropdown-blank',
+           hoverDelayIdle  : 250,
+           preventflip     : false
+        },
+
+        remainIdle: false,
+
+        boot: function() {
+
+            var triggerevent = UI.support.touch ? "click" : "mouseenter";
+
+            // init code
+            UI.$html.on(triggerevent+".dropdown.uikit focus", "[data-uk-dropdown]", function(e) {
+
+                var ele = UI.$(this);
+
+                if (!ele.data("dropdown")) {
+
+                    var dropdown = UI.dropdown(ele, UI.Utils.options(ele.attr("data-uk-dropdown")));
+
+                    if (triggerevent=="click" || (triggerevent=="mouseenter" && dropdown.options.mode=="hover")) {
+                        dropdown.element.trigger(triggerevent);
+                    }
+
+                    if (dropdown.element.find(dropdown.options.dropdownSelector).length) {
+                        e.preventDefault();
+                    }
+                }
+            });
+        },
+
+        init: function() {
+
+            var $this = this;
+
+            this.dropdown     = this.find(this.options.dropdownSelector);
+            this.offsetParent = this.dropdown.parents().filter(function() {
+                return UI.$.inArray(UI.$(this).css('position'), ['relative', 'fixed', 'absolute']) !== -1;
+            }).slice(0,1);
+
+            this.centered  = this.dropdown.hasClass('uk-dropdown-center');
+            this.justified = this.options.justify ? UI.$(this.options.justify) : false;
+
+            this.boundary  = UI.$(this.options.boundary);
+
+            if (!this.boundary.length) {
+                this.boundary = UI.$win;
+            }
+
+            // legacy DEPRECATED!
+            if (this.dropdown.hasClass('uk-dropdown-up')) {
+                this.options.pos = 'top-left';
+            }
+            if (this.dropdown.hasClass('uk-dropdown-flip')) {
+                this.options.pos = this.options.pos.replace('left','right');
+            }
+            if (this.dropdown.hasClass('uk-dropdown-center')) {
+                this.options.pos = this.options.pos.replace(/(left|right)/,'center');
+            }
+            //-- end legacy
+
+            // Init ARIA
+            this.element.attr('aria-haspopup', 'true');
+            this.element.attr('aria-expanded', this.element.hasClass('uk-open'));
+            this.dropdown.attr('aria-hidden', 'true');
+
+            if (this.options.mode == "click" || UI.support.touch) {
+
+                this.on("click.uk.dropdown", function(e) {
+
+                    var $target = UI.$(e.target);
+
+                    if (!$target.parents($this.options.dropdownSelector).length) {
+
+                        if ($target.is("a[href='#']") || $target.parent().is("a[href='#']") || ($this.dropdown.length && !$this.dropdown.is(":visible")) ){
+                            e.preventDefault();
+                        }
+
+                        $target.blur();
+                    }
+
+                    if (!$this.element.hasClass('uk-open')) {
+
+                        $this.show();
+
+                    } else {
+
+                        if (!$this.dropdown.find(e.target).length || $target.is(".uk-dropdown-close") || $target.parents(".uk-dropdown-close").length) {
+                            $this.hide();
+                        }
+                    }
+                });
+
+            } else {
+
+                this.on("mouseenter", function(e) {
+
+                    $this.trigger('pointerenter.uk.dropdown', [$this]);
+
+                    if ($this.remainIdle) {
+                        clearTimeout($this.remainIdle);
+                    }
+
+                    if (hoverIdle) {
+                        clearTimeout(hoverIdle);
+                    }
+
+                    if (active && active == $this) {
+                        return;
+                    }
+
+                    // pseudo manuAim
+                    if (active && active != $this) {
+
+                        hoverIdle = setTimeout(function() {
+                            hoverIdle = setTimeout($this.show.bind($this), $this.options.delay);
+                        }, $this.options.hoverDelayIdle);
+
+                    } else {
+
+                        hoverIdle = setTimeout($this.show.bind($this), $this.options.delay);
+                    }
+
+                }).on("mouseleave", function() {
+
+                    if (hoverIdle) {
+                        clearTimeout(hoverIdle);
+                    }
+
+                    $this.remainIdle = setTimeout(function() {
+                        if (active && active == $this) $this.hide();
+                    }, $this.options.remaintime);
+
+                    $this.trigger('pointerleave.uk.dropdown', [$this]);
+
+                }).on("click", function(e){
+
+                    var $target = UI.$(e.target);
+
+                    if ($this.remainIdle) {
+                        clearTimeout($this.remainIdle);
+                    }
+
+                    if (active && active == $this) {
+                        if (!$this.dropdown.find(e.target).length || $target.is(".uk-dropdown-close") || $target.parents(".uk-dropdown-close").length) {
+                            $this.hide();
+                        }
+                        return;
+                    }
+
+                    if ($target.is("a[href='#']") || $target.parent().is("a[href='#']")){
+                        e.preventDefault();
+                    }
+
+                    $this.show();
+                });
+            }
+        },
+
+        show: function(){
+
+            UI.$html.off("click.outer.dropdown");
+
+            if (active && active != this) {
+                active.hide(true);
+            }
+
+            if (hoverIdle) {
+                clearTimeout(hoverIdle);
+            }
+
+            this.trigger('beforeshow.uk.dropdown', [this]);
+
+            this.checkDimensions();
+            this.element.addClass('uk-open');
+
+            // Update ARIA
+            this.element.attr('aria-expanded', 'true');
+            this.dropdown.attr('aria-hidden', 'false');
+
+            this.trigger('show.uk.dropdown', [this]);
+
+            UI.Utils.checkDisplay(this.dropdown, true);
+            UI.Utils.focus(this.dropdown);
+            active = this;
+
+            this.registerOuterClick();
+        },
+
+        hide: function(force) {
+
+            this.trigger('beforehide.uk.dropdown', [this, force]);
+
+            this.element.removeClass('uk-open');
+
+            if (this.remainIdle) {
+                clearTimeout(this.remainIdle);
+            }
+
+            this.remainIdle = false;
+
+            // Update ARIA
+            this.element.attr('aria-expanded', 'false');
+            this.dropdown.attr('aria-hidden', 'true');
+
+            this.trigger('hide.uk.dropdown', [this, force]);
+
+            if (active == this) active = false;
+        },
+
+        registerOuterClick: function(){
+
+            var $this = this;
+
+            UI.$html.off("click.outer.dropdown");
+
+            setTimeout(function() {
+
+                UI.$html.on("click.outer.dropdown", function(e) {
+
+                    if (hoverIdle) {
+                        clearTimeout(hoverIdle);
+                    }
+
+                    var $target = UI.$(e.target);
+
+                    if (active == $this && !$this.element.find(e.target).length) {
+                        $this.hide(true);
+                        UI.$html.off("click.outer.dropdown");
+                    }
+                });
+            }, 10);
+        },
+
+        checkDimensions: function() {
+
+            if (!this.dropdown.length) return;
+
+            // reset
+            this.dropdown.removeClass('uk-dropdown-top uk-dropdown-bottom uk-dropdown-left uk-dropdown-right uk-dropdown-stack').css({
+                'top-left':'',
+                'left':'',
+                'margin-left' :'',
+                'margin-right':''
+            });
+
+            if (this.justified && this.justified.length) {
+                this.dropdown.css("min-width", "");
+            }
+
+            var $this          = this,
+                pos            = UI.$.extend({}, this.offsetParent.offset(), {width: this.offsetParent[0].offsetWidth, height: this.offsetParent[0].offsetHeight}),
+                posoffset      = this.options.offset,
+                dropdown       = this.dropdown,
+                offset         = dropdown.show().offset() || {left: 0, top: 0},
+                width          = dropdown.outerWidth(),
+                height         = dropdown.outerHeight(),
+                boundarywidth  = this.boundary.width(),
+                boundaryoffset = this.boundary[0] !== window && this.boundary.offset() ? this.boundary.offset(): {top:0, left:0},
+                dpos           = this.options.pos;
+
+            var variants =  {
+                    "bottom-left"   : {top: 0 + pos.height + posoffset, left: 0},
+                    "bottom-right"  : {top: 0 + pos.height + posoffset, left: 0 + pos.width - width},
+                    "bottom-center" : {top: 0 + pos.height + posoffset, left: 0 + pos.width / 2 - width / 2},
+                    "top-left"      : {top: 0 - height - posoffset, left: 0},
+                    "top-right"     : {top: 0 - height - posoffset, left: 0 + pos.width - width},
+                    "top-center"    : {top: 0 - height - posoffset, left: 0 + pos.width / 2 - width / 2},
+                    "left-top"      : {top: 0, left: 0 - width - posoffset},
+                    "left-bottom"   : {top: 0 + pos.height - height, left: 0 - width - posoffset},
+                    "left-center"   : {top: 0 + pos.height / 2 - height / 2, left: 0 - width - posoffset},
+                    "right-top"     : {top: 0, left: 0 + pos.width + posoffset},
+                    "right-bottom"  : {top: 0 + pos.height - height, left: 0 + pos.width + posoffset},
+                    "right-center"  : {top: 0 + pos.height / 2 - height / 2, left: 0 + pos.width + posoffset}
+                },
+                css = {},
+                pp;
+
+            pp = dpos.split('-');
+            css = variants[dpos] ? variants[dpos] : variants['bottom-left'];
+
+            // justify dropdown
+            if (this.justified && this.justified.length) {
+                justify(dropdown.css({left:0}), this.justified, boundarywidth);
+            } else {
+
+                if (this.options.preventflip !== true) {
+
+                    var fdpos;
+
+                    switch(this.checkBoundary(pos.left + css.left, pos.top + css.top, width, height, boundarywidth)) {
+                        case "x":
+                            if(this.options.preventflip !=='x') fdpos = flips['x'][dpos] || 'right-top';
+                            break;
+                        case "y":
+                            if(this.options.preventflip !=='y') fdpos = flips['y'][dpos] || 'top-left';
+                            break;
+                        case "xy":
+                            if(!this.options.preventflip) fdpos = flips['xy'][dpos] || 'right-bottom';
+                            break;
+                    }
+
+                    if (fdpos) {
+
+                        pp  = fdpos.split('-');
+                        css = variants[fdpos] ? variants[fdpos] : variants['bottom-left'];
+
+                        // check flipped
+                        if (this.checkBoundary(pos.left + css.left, pos.top + css.top, width, height, boundarywidth)) {
+                            pp  = dpos.split('-');
+                            css = variants[dpos] ? variants[dpos] : variants['bottom-left'];
+                        }
+                    }
+                }
+            }
+
+            if (width > boundarywidth) {
+                dropdown.addClass("uk-dropdown-stack");
+                this.trigger('stack.uk.dropdown', [this]);
+            }
+
+            dropdown.css(css).css("display", "").addClass('uk-dropdown-'+pp[0]);
+        },
+
+        checkBoundary: function(left, top, width, height, boundarywidth) {
+
+            var axis = "";
+
+            if (left < 0 || ((left - UI.$win.scrollLeft())+width) > boundarywidth) {
+               axis += "x";
+            }
+
+            if ((top - UI.$win.scrollTop()) < 0 || ((top - UI.$win.scrollTop())+height) > window.innerHeight) {
+               axis += "y";
+            }
+
+            return axis;
+        }
+    });
+
+
+    UI.component('dropdownOverlay', {
+
+        defaults: {
+           justify : false,
+           cls     : '',
+           duration: 200
+        },
+
+        boot: function() {
+
+            // init code
+            UI.ready(function(context) {
+
+                UI.$("[data-uk-dropdown-overlay]", context).each(function() {
+                    var ele = UI.$(this);
+
+                    if (!ele.data("dropdownOverlay")) {
+                        UI.dropdownOverlay(ele, UI.Utils.options(ele.attr("data-uk-dropdown-overlay")));
+                    }
+                });
+            });
+        },
+
+        init: function() {
+
+            var $this = this;
+
+            this.justified = this.options.justify ? UI.$(this.options.justify) : false;
+            this.overlay   = this.element.find('uk-dropdown-overlay');
+
+            if (!this.overlay.length) {
+                this.overlay = UI.$('<div class="uk-dropdown-overlay"></div>').appendTo(this.element);
+            }
+
+            this.overlay.addClass(this.options.cls);
+
+            this.on({
+
+                'beforeshow.uk.dropdown': function(e, dropdown) {
+                    $this.dropdown = dropdown;
+
+                    if ($this.justified && $this.justified.length) {
+                        justify($this.overlay.css({'display':'block', 'margin-left':'','margin-right':''}), $this.justified, $this.justified.outerWidth());
+                    }
+                },
+
+                'show.uk.dropdown': function(e, dropdown) {
+
+                    var h = $this.dropdown.dropdown.outerHeight(true);
+
+                    $this.dropdown.element.removeClass('uk-open');
+
+                    $this.overlay.stop().css('display', 'block').animate({height: h}, $this.options.duration, function() {
+
+                       $this.dropdown.dropdown.css('visibility', '');
+                       $this.dropdown.element.addClass('uk-open');
+
+                       UI.Utils.checkDisplay($this.dropdown.dropdown, true);
+                    });
+
+                    $this.pointerleave = false;
+                },
+
+                'hide.uk.dropdown': function() {
+                    $this.overlay.stop().animate({height: 0}, $this.options.duration);
+                },
+
+                'pointerenter.uk.dropdown': function(e, dropdown) {
+                    clearTimeout($this.remainIdle);
+                },
+
+                'pointerleave.uk.dropdown': function(e, dropdown) {
+                    $this.pointerleave = true;
+                }
+            });
+
+
+            this.overlay.on({
+
+                'mouseenter': function() {
+                    if ($this.remainIdle) {
+                        clearTimeout($this.dropdown.remainIdle);
+                        clearTimeout($this.remainIdle);
+                    }
+                },
+
+                'mouseleave': function(){
+
+                    if ($this.pointerleave && active) {
+
+                        $this.remainIdle = setTimeout(function() {
+                           if(active) active.hide();
+                        }, active.options.remaintime);
+                    }
+                }
+            })
+        }
+
+    });
+
+
+    function justify(ele, justifyTo, boundarywidth, offset) {
+
+        ele           = UI.$(ele);
+        justifyTo     = UI.$(justifyTo);
+        boundarywidth = boundarywidth || window.innerWidth;
+        offset        = offset || ele.offset();
+
+        if (justifyTo.length) {
+
+            var jwidth = justifyTo.outerWidth();
+
+            ele.css("min-width", jwidth);
+
+            if (UI.langdirection == 'right') {
+
+                var right1   = boundarywidth - (justifyTo.offset().left + jwidth),
+                    right2   = boundarywidth - (ele.offset().left + ele.outerWidth());
+
+                ele.css("margin-right", right1 - right2);
+
+            } else {
+                ele.css("margin-left", justifyTo.offset().left - offset.left);
+            }
+        }
+    }
+
+})(UIkit);
+
+/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(UI) {
+
+    "use strict";
+
     var grids = [];
 
     UI.component('gridMatchHeight', {
@@ -1332,6 +1862,159 @@
 
     "use strict";
 
+    UI.component('nav', {
+
+        defaults: {
+            toggle: ">li.uk-parent > a[href='#']",
+            lists: ">li.uk-parent > ul",
+            multiple: false
+        },
+
+        boot: function() {
+
+            // init code
+            UI.ready(function(context) {
+
+                UI.$("[data-uk-nav]", context).each(function() {
+                    var nav = UI.$(this);
+
+                    if (!nav.data("nav")) {
+                        var obj = UI.nav(nav, UI.Utils.options(nav.attr("data-uk-nav")));
+                    }
+                });
+            });
+        },
+
+        init: function() {
+
+            var $this = this;
+
+            this.on("click.uk.nav", this.options.toggle, function(e) {
+                e.preventDefault();
+                var ele = UI.$(this);
+                $this.open(ele.parent()[0] == $this.element[0] ? ele : ele.parent("li"));
+            });
+
+            this.update();
+
+            UI.domObserve(this.element, function(e) {
+                if ($this.element.find($this.options.lists).not('[role]').length) {
+                    $this.update();
+                }
+            });
+        },
+
+        update: function() {
+
+            var $this = this;
+
+            this.find(this.options.lists).each(function() {
+
+                var $ele   = UI.$(this).attr('role', 'menu'),
+                    parent = $ele.closest('li'),
+                    active = parent.hasClass("uk-active");
+
+                if (!parent.data('list-container')) {
+                    $ele.wrap('<div style="overflow:hidden;height:0;position:relative;"></div>');
+                    parent.data('list-container', $ele.parent()[active ? 'removeClass':'addClass']('uk-hidden'));
+                }
+
+                // Init ARIA
+                parent.attr('aria-expanded', parent.hasClass("uk-open"));
+
+                if (active) $this.open(parent, true);
+            });
+        },
+
+        open: function(li, noanimation) {
+
+            var $this = this, element = this.element, $li = UI.$(li), $container = $li.data('list-container');
+
+            if (!this.options.multiple) {
+
+                element.children('.uk-open').not(li).each(function() {
+
+                    var ele = UI.$(this);
+
+                    if (ele.data('list-container')) {
+                        ele.data('list-container').stop().animate({height: 0}, function() {
+                            UI.$(this).parent().removeClass('uk-open').end().addClass('uk-hidden');
+                        });
+                    }
+                });
+            }
+
+            $li.toggleClass('uk-open');
+
+            // Update ARIA
+            $li.attr('aria-expanded', $li.hasClass('uk-open'));
+
+            if ($container) {
+
+                if ($li.hasClass('uk-open')) {
+                    $container.removeClass('uk-hidden');
+                }
+
+                if (noanimation) {
+
+                    $container.stop().height($li.hasClass('uk-open') ? 'auto' : 0);
+
+                    if (!$li.hasClass('uk-open')) {
+                        $container.addClass('uk-hidden');
+                    }
+
+                    this.trigger('display.uk.check');
+
+                } else {
+
+                    $container.stop().animate({
+                        height: ($li.hasClass('uk-open') ? getHeight($container.find('ul:first')) : 0)
+                    }, function() {
+
+                        if (!$li.hasClass('uk-open')) {
+                            $container.addClass('uk-hidden');
+                        } else {
+                            $container.css('height', '');
+                        }
+
+                        $this.trigger('display.uk.check');
+                    });
+                }
+            }
+        }
+    });
+
+
+    // helper
+
+    function getHeight(ele) {
+
+        var $ele = UI.$(ele), height = "auto";
+
+        if ($ele.is(":visible")) {
+            height = $ele.outerHeight();
+        } else {
+            var tmp = {
+                position: $ele.css("position"),
+                visibility: $ele.css("visibility"),
+                display: $ele.css("display")
+            };
+
+            height = $ele.css({position: 'absolute', visibility: 'hidden', display: 'block'}).outerHeight();
+
+            $ele.css(tmp); // reset element
+        }
+
+        return height;
+    }
+
+})(UIkit);
+
+/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(UI) {
+
+    "use strict";
+
     var scrollpos = {x: window.scrollX, y: window.scrollY},
         $win      = UI.$win,
         $doc      = UI.$doc,
@@ -1530,216 +2213,6 @@
 
     "use strict";
 
-    var $win           = UI.$win,
-        $doc           = UI.$doc,
-        scrollspies    = [],
-        checkScrollSpy = function() {
-            for(var i=0; i < scrollspies.length; i++) {
-                window.requestAnimationFrame.apply(window, [scrollspies[i].check]);
-            }
-        };
-
-    UI.component('scrollspy', {
-
-        defaults: {
-            target     : false,
-            cls        : "uk-scrollspy-inview",
-            initcls    : "uk-scrollspy-init-inview",
-            topoffset  : 0,
-            leftoffset : 0,
-            repeat     : false,
-            delay      : 0
-        },
-
-        boot: function() {
-
-            // listen to scroll and resize
-            $doc.on("scrolling.uk.document", checkScrollSpy);
-            $win.on("load resize orientationchange", UI.Utils.debounce(checkScrollSpy, 50));
-
-            // init code
-            UI.ready(function(context) {
-
-                UI.$("[data-uk-scrollspy]", context).each(function() {
-
-                    var element = UI.$(this);
-
-                    if (!element.data("scrollspy")) {
-                        var obj = UI.scrollspy(element, UI.Utils.options(element.attr("data-uk-scrollspy")));
-                    }
-                });
-            });
-        },
-
-        init: function() {
-
-            var $this = this, inviewstate, initinview, togglecls = this.options.cls.split(/,/), fn = function(){
-
-                var elements     = $this.options.target ? $this.element.find($this.options.target) : $this.element,
-                    delayIdx     = elements.length === 1 ? 1 : 0,
-                    toggleclsIdx = 0;
-
-                elements.each(function(idx){
-
-                    var element     = UI.$(this),
-                        inviewstate = element.data('inviewstate'),
-                        inview      = UI.Utils.isInView(element, $this.options),
-                        toggle      = element.data('ukScrollspyCls') || togglecls[toggleclsIdx].trim();
-
-                    if (inview && !inviewstate && !element.data('scrollspy-idle')) {
-
-                        if (!initinview) {
-                            element.addClass($this.options.initcls);
-                            $this.offset = element.offset();
-                            initinview = true;
-
-                            element.trigger("init.uk.scrollspy");
-                        }
-
-                        element.data('scrollspy-idle', setTimeout(function(){
-
-                            element.addClass("uk-scrollspy-inview").toggleClass(toggle).width();
-                            element.trigger("inview.uk.scrollspy");
-
-                            element.data('scrollspy-idle', false);
-                            element.data('inviewstate', true);
-
-                        }, $this.options.delay * delayIdx));
-
-                        delayIdx++;
-                    }
-
-                    if (!inview && inviewstate && $this.options.repeat) {
-
-                        if (element.data('scrollspy-idle')) {
-                            clearTimeout(element.data('scrollspy-idle'));
-                            element.data('scrollspy-idle', false);
-                        }
-
-                        element.removeClass("uk-scrollspy-inview").toggleClass(toggle);
-                        element.data('inviewstate', false);
-
-                        element.trigger("outview.uk.scrollspy");
-                    }
-
-                    toggleclsIdx = togglecls[toggleclsIdx + 1] ? (toggleclsIdx + 1) : 0;
-
-                });
-            };
-
-            fn();
-
-            this.check = fn;
-
-            scrollspies.push(this);
-        }
-    });
-
-
-    var scrollspynavs = [],
-        checkScrollSpyNavs = function() {
-            for(var i=0; i < scrollspynavs.length; i++) {
-                window.requestAnimationFrame.apply(window, [scrollspynavs[i].check]);
-            }
-        };
-
-    UI.component('scrollspynav', {
-
-        defaults: {
-            "cls"          : 'uk-active',
-            "closest"      : false,
-            "topoffset"    : 0,
-            "leftoffset"   : 0,
-            "smoothscroll" : false
-        },
-
-        boot: function() {
-
-            // listen to scroll and resize
-            $doc.on("scrolling.uk.document", checkScrollSpyNavs);
-            $win.on("resize orientationchange", UI.Utils.debounce(checkScrollSpyNavs, 50));
-
-            // init code
-            UI.ready(function(context) {
-
-                UI.$("[data-uk-scrollspy-nav]", context).each(function() {
-
-                    var element = UI.$(this);
-
-                    if (!element.data("scrollspynav")) {
-                        var obj = UI.scrollspynav(element, UI.Utils.options(element.attr("data-uk-scrollspy-nav")));
-                    }
-                });
-            });
-        },
-
-        init: function() {
-
-            var ids     = [],
-                links   = this.find("a[href^='#']").each(function(){ if(this.getAttribute("href").trim()!=='#') ids.push(this.getAttribute("href")); }),
-                targets = UI.$(ids.join(",")),
-
-                clsActive  = this.options.cls,
-                clsClosest = this.options.closest || this.options.closest;
-
-            var $this = this, inviews, fn = function(){
-
-                inviews = [];
-
-                for (var i=0 ; i < targets.length ; i++) {
-                    if (UI.Utils.isInView(targets.eq(i), $this.options)) {
-                        inviews.push(targets.eq(i));
-                    }
-                }
-
-                if (inviews.length) {
-
-                    var navitems,
-                        scrollTop = $win.scrollTop(),
-                        target = (function(){
-                            for(var i=0; i< inviews.length;i++){
-                                if (inviews[i].offset().top - $this.options.topoffset >= scrollTop){
-                                    return inviews[i];
-                                }
-                            }
-                        })();
-
-                    if (!target) return;
-
-                    if ($this.options.closest) {
-                        links.blur().closest(clsClosest).removeClass(clsActive);
-                        navitems = links.filter("a[href='#"+target.attr("id")+"']").closest(clsClosest).addClass(clsActive);
-                    } else {
-                        navitems = links.removeClass(clsActive).filter("a[href='#"+target.attr("id")+"']").addClass(clsActive);
-                    }
-
-                    $this.element.trigger("inview.uk.scrollspynav", [target, navitems]);
-                }
-            };
-
-            if (this.options.smoothscroll && UI.smoothScroll) {
-                links.each(function(){
-                    UI.smoothScroll(this, $this.options.smoothscroll);
-                });
-            }
-
-            fn();
-
-            this.element.data("scrollspynav", this);
-
-            this.check = fn;
-            scrollspynavs.push(this);
-
-        }
-    });
-
-})(UIkit);
-
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
-(function(UI) {
-
-    "use strict";
-
     UI.component('smoothScroll', {
 
         boot: function() {
@@ -1795,6 +2268,484 @@
     if (!UI.$.easing.easeOutExpo) {
         UI.$.easing.easeOutExpo = function(x, t, b, c, d) { return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b; };
     }
+
+})(UIkit);
+
+/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(UI) {
+
+    "use strict";
+
+    var Animations;
+
+    UI.component('switcher', {
+
+        defaults: {
+            connect   : false,
+            toggle    : ">*",
+            active    : 0,
+            animation : false,
+            duration  : 200,
+            swiping   : true
+        },
+
+        animating: false,
+
+        boot: function() {
+
+            // init code
+            UI.ready(function(context) {
+
+                UI.$("[data-uk-switcher]", context).each(function() {
+                    var switcher = UI.$(this);
+
+                    if (!switcher.data("switcher")) {
+                        var obj = UI.switcher(switcher, UI.Utils.options(switcher.attr("data-uk-switcher")));
+                    }
+                });
+            });
+        },
+
+        init: function() {
+
+            var $this = this;
+
+            this.on('click.uk.switcher', this.options.toggle, function(e) {
+                e.preventDefault();
+                $this.show(this);
+            });
+
+            if (!this.options.connect) {
+                return;
+            }
+
+            this.connect = UI.$(this.options.connect);
+
+            if (!this.connect.length) {
+                return;
+            }
+
+            this.connect.on('click.uk.switcher', '[data-uk-switcher-item]', function(e) {
+
+                e.preventDefault();
+
+                var item = UI.$(this).attr('data-uk-switcher-item');
+
+                if ($this.index == item) return;
+
+                switch(item) {
+                    case 'next':
+                    case 'previous':
+                        $this.show($this.index + (item=='next' ? 1:-1));
+                        break;
+                    default:
+                        $this.show(parseInt(item, 10));
+                }
+            });
+
+            if (this.options.swiping) {
+
+                this.connect.on('swipeRight swipeLeft', function(e) {
+                    e.preventDefault();
+                    if (!window.getSelection().toString()) {
+                        $this.show($this.index + (e.type == 'swipeLeft' ? 1 : -1));
+                    }
+                });
+            }
+
+            this.update();
+        },
+
+        update: function() {
+
+            this.connect.children().removeClass('uk-active').attr('aria-hidden', 'true');
+
+            var toggles = this.find(this.options.toggle),
+                active  = toggles.filter(".uk-active");
+
+            if (active.length) {
+                this.show(active, false);
+            } else {
+
+                if (this.options.active===false) return;
+
+                active = toggles.eq(this.options.active);
+                this.show(active.length ? active : toggles.eq(0), false);
+            }
+
+            // Init ARIA for toggles
+            toggles.not(active).attr('aria-expanded', 'false');
+            active.attr('aria-expanded', 'true');
+        },
+
+        show: function(tab, animate) {
+
+            if (this.animating) {
+                return;
+            }
+
+            if (isNaN(tab)) {
+                tab = UI.$(tab);
+            } else {
+
+                var toggles = this.find(this.options.toggle);
+
+                tab = tab < 0 ? toggles.length-1 : tab;
+                tab = toggles.eq(toggles[tab] ? tab : 0);
+            }
+
+            var $this     = this,
+                toggles   = this.find(this.options.toggle),
+                active    = UI.$(tab),
+                animation = Animations[this.options.animation] || function(current, next) {
+
+                    if (!$this.options.animation) {
+                        return Animations.none.apply($this);
+                    }
+
+                    var anim = $this.options.animation.split(',');
+
+                    if (anim.length == 1) {
+                        anim[1] = anim[0];
+                    }
+
+                    anim[0] = anim[0].trim();
+                    anim[1] = anim[1].trim();
+
+                    return coreAnimation.apply($this, [anim, current, next]);
+                };
+
+            if (animate===false || !UI.support.animation) {
+                animation = Animations.none;
+            }
+
+            if (active.hasClass("uk-disabled")) return;
+
+            // Update ARIA for Toggles
+            toggles.attr('aria-expanded', 'false');
+            active.attr('aria-expanded', 'true');
+
+            toggles.filter(".uk-active").removeClass("uk-active");
+            active.addClass("uk-active");
+
+            if (this.options.connect && this.connect.length) {
+
+                this.index = this.find(this.options.toggle).index(active);
+
+                if (this.index == -1 ) {
+                    this.index = 0;
+                }
+
+                this.connect.each(function() {
+
+                    var container = UI.$(this),
+                        children  = UI.$(container.children()),
+                        current   = UI.$(children.filter('.uk-active')),
+                        next      = UI.$(children.eq($this.index));
+
+                        $this.animating = true;
+
+                        animation.apply($this, [current, next]).then(function(){
+
+                            current.removeClass("uk-active");
+                            next.addClass("uk-active");
+
+                            // Update ARIA for connect
+                            current.attr('aria-hidden', 'true');
+                            next.attr('aria-hidden', 'false');
+
+                            UI.Utils.checkDisplay(next, true);
+
+                            $this.animating = false;
+
+                        });
+                });
+            }
+
+            this.trigger("show.uk.switcher", [active]);
+        }
+    });
+
+    Animations = {
+
+        'none': function() {
+            var d = UI.$.Deferred();
+            d.resolve();
+            return d.promise();
+        },
+
+        'fade': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-fade', current, next]);
+        },
+
+        'slide-bottom': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-slide-bottom', current, next]);
+        },
+
+        'slide-top': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-slide-top', current, next]);
+        },
+
+        'slide-vertical': function(current, next, dir) {
+
+            var anim = ['uk-animation-slide-top', 'uk-animation-slide-bottom'];
+
+            if (current && current.index() > next.index()) {
+                anim.reverse();
+            }
+
+            return coreAnimation.apply(this, [anim, current, next]);
+        },
+
+        'slide-left': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-slide-left', current, next]);
+        },
+
+        'slide-right': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-slide-right', current, next]);
+        },
+
+        'slide-horizontal': function(current, next, dir) {
+
+            var anim = ['uk-animation-slide-right', 'uk-animation-slide-left'];
+
+            if (current && current.index() > next.index()) {
+                anim.reverse();
+            }
+
+            return coreAnimation.apply(this, [anim, current, next]);
+        },
+
+        'scale': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-scale-up', current, next]);
+        }
+    };
+
+    UI.switcher.animations = Animations;
+
+
+    // helpers
+
+    function coreAnimation(cls, current, next) {
+
+        var d = UI.$.Deferred(), clsIn = cls, clsOut = cls, release;
+
+        if (next[0]===current[0]) {
+            d.resolve();
+            return d.promise();
+        }
+
+        if (typeof(cls) == 'object') {
+            clsIn  = cls[0];
+            clsOut = cls[1] || cls[0];
+        }
+
+        UI.$body.css('overflow-x', 'hidden'); // fix scroll jumping in iOS
+
+        release = function() {
+
+            if (current) current.hide().removeClass('uk-active '+clsOut+' uk-animation-reverse');
+
+            next.addClass(clsIn).one(UI.support.animation.end, function() {
+
+                setTimeout(function () {
+                    next.removeClass(''+clsIn+'').css({opacity:'', display:''});
+                }, 0);
+
+                d.resolve();
+
+                UI.$body.css('overflow-x', '');
+
+                if (current) current.css({opacity:'', display:''});
+
+            }.bind(this)).show();
+        };
+
+        next.css('animation-duration', this.options.duration+'ms');
+
+        if (current && current.length) {
+
+            current.css('animation-duration', this.options.duration+'ms');
+
+            current.css('display', 'none').addClass(clsOut+' uk-animation-reverse').one(UI.support.animation.end, function() {
+                release();
+            }.bind(this)).css('display', '');
+
+        } else {
+            next.addClass('uk-active');
+            release();
+        }
+
+        return d.promise();
+    }
+
+})(UIkit);
+
+/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(UI) {
+
+    "use strict";
+
+    UI.component('tab', {
+
+        defaults: {
+            target    : '>li:not(.uk-tab-responsive, .uk-disabled)',
+            connect   : false,
+            active    : 0,
+            animation : false,
+            duration  : 200,
+            swiping   : true
+        },
+
+        boot: function() {
+
+            // init code
+            UI.ready(function(context) {
+
+                UI.$("[data-uk-tab]", context).each(function() {
+
+                    var tab = UI.$(this);
+
+                    if (!tab.data("tab")) {
+                        var obj = UI.tab(tab, UI.Utils.options(tab.attr("data-uk-tab")));
+                    }
+                });
+            });
+        },
+
+        init: function() {
+
+            var $this = this;
+
+            this.current = false;
+
+            this.on("click.uk.tab", this.options.target, function(e) {
+
+                e.preventDefault();
+
+                if ($this.switcher && $this.switcher.animating) {
+                    return;
+                }
+
+                var current = $this.find($this.options.target).not(this);
+
+                current.removeClass("uk-active").blur();
+
+                $this.trigger("change.uk.tab", [UI.$(this).addClass("uk-active"), $this.current]);
+
+                $this.current = UI.$(this);
+
+                // Update ARIA
+                if (!$this.options.connect) {
+                    current.attr('aria-expanded', 'false');
+                    UI.$(this).attr('aria-expanded', 'true');
+                }
+            });
+
+            if (this.options.connect) {
+                this.connect = UI.$(this.options.connect);
+            }
+
+            // init responsive tab
+            this.responsivetab = UI.$('<li class="uk-tab-responsive uk-active"><a></a></li>').append('<div class="uk-dropdown uk-dropdown-small"><ul class="uk-nav uk-nav-dropdown"></ul><div>');
+
+            this.responsivetab.dropdown = this.responsivetab.find('.uk-dropdown');
+            this.responsivetab.lst      = this.responsivetab.dropdown.find('ul');
+            this.responsivetab.caption  = this.responsivetab.find('a:first');
+
+            if (this.element.hasClass("uk-tab-bottom")) this.responsivetab.dropdown.addClass("uk-dropdown-up");
+
+            // handle click
+            this.responsivetab.lst.on('click.uk.tab', 'a', function(e) {
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                var link = UI.$(this);
+
+                $this.element.children('li:not(.uk-tab-responsive)').eq(link.data('index')).trigger('click');
+            });
+
+            this.on('show.uk.switcher change.uk.tab', function(e, tab) {
+                $this.responsivetab.caption.html(tab.text());
+            });
+
+            this.element.append(this.responsivetab);
+
+            // init UIkit components
+            if (this.options.connect) {
+                this.switcher = UI.switcher(this.element, {
+                    'toggle'    : '>li:not(.uk-tab-responsive)',
+                    'connect'   : this.options.connect,
+                    'active'    : this.options.active,
+                    'animation' : this.options.animation,
+                    'duration'  : this.options.duration,
+                    'swiping'   : this.options.swiping
+                });
+            }
+
+            UI.dropdown(this.responsivetab, {"mode": "click", "preventflip": "y"});
+
+            // init
+            $this.trigger("change.uk.tab", [this.element.find(this.options.target).not('.uk-tab-responsive').filter('.uk-active')]);
+
+            this.check();
+
+            UI.$win.on('resize orientationchange', UI.Utils.debounce(function(){
+                if ($this.element.is(":visible"))  $this.check();
+            }, 100));
+
+            this.on('display.uk.check', function(){
+                if ($this.element.is(":visible"))  $this.check();
+            });
+        },
+
+        check: function() {
+
+            var children = this.element.children('li:not(.uk-tab-responsive)').removeClass('uk-hidden');
+
+            if (!children.length) {
+                this.responsivetab.addClass('uk-hidden');
+                return;
+            }
+
+            var top          = (children.eq(0).offset().top + Math.ceil(children.eq(0).height()/2)),
+                doresponsive = false,
+                item, link, clone;
+
+            this.responsivetab.lst.empty();
+
+            children.each(function(){
+
+                if (UI.$(this).offset().top > top) {
+                    doresponsive = true;
+                }
+            });
+
+            if (doresponsive) {
+
+                for (var i = 0; i < children.length; i++) {
+
+                    item  = UI.$(children.eq(i));
+                    link  = item.find('a');
+
+                    if (item.css('float') != 'none' && !item.attr('uk-dropdown')) {
+
+                        if (!item.hasClass('uk-disabled')) {
+
+                            clone = item[0].outerHTML.replace('<a ', '<a data-index="'+i+'" ');
+
+                            this.responsivetab.lst.append(clone);
+                        }
+
+                        item.addClass('uk-hidden');
+                    }
+                }
+            }
+
+            this.responsivetab[this.responsivetab.lst.children('li').length ? 'removeClass':'addClass']('uk-hidden');
+        }
+    });
 
 })(UIkit);
 
@@ -2907,5 +3858,1356 @@
             }
         }
     }, false);
+
+});
+
+/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(addon) {
+    var component;
+
+    if (window.UIkit) {
+        component = addon(UIkit);
+    }
+
+    if (typeof define == "function" && define.amd) {
+        define("uikit-tooltip", ["uikit"], function(){
+            return component || addon(UIkit);
+        });
+    }
+
+})(function(UI){
+
+    "use strict";
+
+    var $tooltip,   // tooltip container
+        tooltipdelay, checkdelay;
+
+    UI.component('tooltip', {
+
+        defaults: {
+            offset: 5,
+            pos: 'top',
+            animation: false,
+            delay: 0, // in miliseconds
+            cls: "",
+            activeClass: "uk-active",
+            src: function(ele) {
+                var title = ele.attr('title');
+
+                if (title !== undefined) {
+                    ele.data('cached-title', title).removeAttr('title');
+                }
+
+                return ele.data("cached-title");
+            }
+        },
+
+        tip: "",
+
+        boot: function() {
+
+            // init code
+            UI.$html.on("mouseenter.tooltip.uikit focus.tooltip.uikit", "[data-uk-tooltip]", function(e) {
+                var ele = UI.$(this);
+
+                if (!ele.data("tooltip")) {
+                    UI.tooltip(ele, UI.Utils.options(ele.attr("data-uk-tooltip")));
+                    ele.trigger("mouseenter");
+                }
+            });
+        },
+
+        init: function() {
+
+            var $this = this;
+
+            if (!$tooltip) {
+                $tooltip = UI.$('<div class="uk-tooltip"></div>').appendTo("body");
+            }
+
+            this.on({
+                focus      : function(e) { $this.show(); },
+                blur       : function(e) { $this.hide(); },
+                mouseenter : function(e) { $this.show(); },
+                mouseleave : function(e) { $this.hide(); }
+            });
+        },
+
+        show: function() {
+
+            this.tip = typeof(this.options.src) === "function" ? this.options.src(this.element) : this.options.src;
+
+            if (tooltipdelay)     clearTimeout(tooltipdelay);
+            if (checkdelay)       clearTimeout(checkdelay);
+
+            if (typeof(this.tip) === 'string' ? !this.tip.length:true) return;
+
+            $tooltip.stop().css({"top": -2000, "visibility": "hidden"}).removeClass(this.options.activeClass).show();
+            $tooltip.html('<div class="uk-tooltip-inner">' + this.tip + '</div>');
+
+            var $this      = this,
+                pos        = UI.$.extend({}, this.element.offset(), {width: this.element[0].offsetWidth, height: this.element[0].offsetHeight}),
+                width      = $tooltip[0].offsetWidth,
+                height     = $tooltip[0].offsetHeight,
+                offset     = typeof(this.options.offset) === "function" ? this.options.offset.call(this.element) : this.options.offset,
+                position   = typeof(this.options.pos) === "function" ? this.options.pos.call(this.element) : this.options.pos,
+                tmppos     = position.split("-"),
+                tcss       = {
+                    "display"    : "none",
+                    "visibility" : "visible",
+                    "top"        : (pos.top + pos.height + height),
+                    "left"       : pos.left
+                };
+
+
+            // prevent strange position
+            // when tooltip is in offcanvas etc.
+            if (UI.$html.css('position')=='fixed' || UI.$body.css('position')=='fixed'){
+                var bodyoffset = UI.$('body').offset(),
+                    htmloffset = UI.$('html').offset(),
+                    docoffset  = {'top': (htmloffset.top + bodyoffset.top), 'left': (htmloffset.left + bodyoffset.left)};
+
+                pos.left -= docoffset.left;
+                pos.top  -= docoffset.top;
+            }
+
+
+            if ((tmppos[0] == "left" || tmppos[0] == "right") && UI.langdirection == 'right') {
+                tmppos[0] = tmppos[0] == "left" ? "right" : "left";
+            }
+
+            var variants =  {
+                "bottom"  : {top: pos.top + pos.height + offset, left: pos.left + pos.width / 2 - width / 2},
+                "top"     : {top: pos.top - height - offset, left: pos.left + pos.width / 2 - width / 2},
+                "left"    : {top: pos.top + pos.height / 2 - height / 2, left: pos.left - width - offset},
+                "right"   : {top: pos.top + pos.height / 2 - height / 2, left: pos.left + pos.width + offset}
+            };
+
+            UI.$.extend(tcss, variants[tmppos[0]]);
+
+            if (tmppos.length == 2) tcss.left = (tmppos[1] == 'left') ? (pos.left) : ((pos.left + pos.width) - width);
+
+            var boundary = this.checkBoundary(tcss.left, tcss.top, width, height);
+
+            if(boundary) {
+
+                switch(boundary) {
+                    case "x":
+
+                        if (tmppos.length == 2) {
+                            position = tmppos[0]+"-"+(tcss.left < 0 ? "left": "right");
+                        } else {
+                            position = tcss.left < 0 ? "right": "left";
+                        }
+
+                        break;
+
+                    case "y":
+                        if (tmppos.length == 2) {
+                            position = (tcss.top < 0 ? "bottom": "top")+"-"+tmppos[1];
+                        } else {
+                            position = (tcss.top < 0 ? "bottom": "top");
+                        }
+
+                        break;
+
+                    case "xy":
+                        if (tmppos.length == 2) {
+                            position = (tcss.top < 0 ? "bottom": "top")+"-"+(tcss.left < 0 ? "left": "right");
+                        } else {
+                            position = tcss.left < 0 ? "right": "left";
+                        }
+
+                        break;
+
+                }
+
+                tmppos = position.split("-");
+
+                UI.$.extend(tcss, variants[tmppos[0]]);
+
+                if (tmppos.length == 2) tcss.left = (tmppos[1] == 'left') ? (pos.left) : ((pos.left + pos.width) - width);
+            }
+
+
+            tcss.left -= UI.$body.position().left;
+
+            tooltipdelay = setTimeout(function(){
+
+                $tooltip.css(tcss).attr("class", ["uk-tooltip", "uk-tooltip-"+position, $this.options.cls].join(' '));
+
+                if ($this.options.animation) {
+                    $tooltip.css({opacity: 0, display: 'block'}).addClass($this.options.activeClass).animate({opacity: 1}, parseInt($this.options.animation, 10) || 400);
+                } else {
+                    $tooltip.show().addClass($this.options.activeClass);
+                }
+
+                tooltipdelay = false;
+
+                // close tooltip if element was removed or hidden
+                checkdelay = setInterval(function(){
+                    if(!$this.element.is(':visible')) $this.hide();
+                }, 150);
+
+            }, parseInt(this.options.delay, 10) || 0);
+        },
+
+        hide: function() {
+            if(this.element.is("input") && this.element[0]===document.activeElement) return;
+
+            if(tooltipdelay) clearTimeout(tooltipdelay);
+            if (checkdelay)  clearTimeout(checkdelay);
+
+            $tooltip.stop();
+
+            if (this.options.animation) {
+
+                var $this = this;
+
+                $tooltip.fadeOut(parseInt(this.options.animation, 10) || 400, function(){
+                    $tooltip.removeClass($this.options.activeClass)
+                });
+
+            } else {
+                $tooltip.hide().removeClass(this.options.activeClass);
+            }
+        },
+
+        content: function() {
+            return this.tip;
+        },
+
+        checkBoundary: function(left, top, width, height) {
+
+            var axis = "";
+
+            if(left < 0 || ((left - UI.$win.scrollLeft())+width) > window.innerWidth) {
+               axis += "x";
+            }
+
+            if(top < 0 || ((top - UI.$win.scrollTop())+height) > window.innerHeight) {
+               axis += "y";
+            }
+
+            return axis;
+        }
+    });
+
+    return UI.tooltip;
+});
+
+/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(addon) {
+
+    var component;
+
+    if (window.UIkit) {
+        component = addon(UIkit);
+    }
+
+    if (typeof define == "function" && define.amd) { // AMD
+        define("uikit-lightbox", ["uikit"], function(){
+            return component || addon(UIkit);
+        });
+    }
+
+})(function(UI){
+
+    "use strict";
+
+    var modal, cache = {};
+
+    UI.component('lightbox', {
+
+        defaults: {
+            allowfullscreen : true,
+            duration        : 400,
+            group           : false,
+            keyboard        : true
+        },
+
+        index : 0,
+        items : false,
+
+        boot: function() {
+
+            UI.$html.on('click', '[data-uk-lightbox]', function(e){
+
+                e.preventDefault();
+
+                var link = UI.$(this);
+
+                if (!link.data("lightbox")) {
+
+                    UI.lightbox(link, UI.Utils.options(link.attr("data-uk-lightbox")));
+                }
+
+                link.data("lightbox").show(link);
+            });
+
+            // keyboard navigation
+            UI.$doc.on('keyup', function(e) {
+
+                if (modal && modal.is(':visible') && modal.lightbox.options.keyboard) {
+
+                    e.preventDefault();
+
+                    switch(e.keyCode) {
+                        case 37:
+                            modal.lightbox.previous();
+                            break;
+                        case 39:
+                            modal.lightbox.next();
+                            break;
+                    }
+                }
+            });
+        },
+
+        init: function() {
+
+            var siblings = [];
+
+            this.index    = 0;
+            this.siblings = [];
+
+            if (this.element && this.element.length) {
+
+                var domSiblings  = this.options.group ? UI.$([
+                    '[data-uk-lightbox*="'+this.options.group+'"]',
+                    "[data-uk-lightbox*='"+this.options.group+"']"
+                ].join(',')) : this.element;
+
+                domSiblings.each(function() {
+
+                    var ele = UI.$(this);
+
+                    siblings.push({
+                        'source': ele.attr('href'),
+                        'title' : ele.attr('data-title') || ele.attr('title'),
+                        'type'  : ele.attr("data-lightbox-type") || 'auto',
+                        'link'  : ele
+                    });
+                });
+
+                this.index    = domSiblings.index(this.element);
+                this.siblings = siblings;
+
+            } else if (this.options.group && this.options.group.length) {
+                this.siblings = this.options.group;
+            }
+
+            this.trigger('lightbox-init', [this]);
+        },
+
+        show: function(index) {
+
+            this.modal = getModal(this);
+
+            // stop previous animation
+            this.modal.dialog.stop();
+            this.modal.content.stop();
+
+            var $this = this, promise = UI.$.Deferred(), data, item;
+
+            index = index || 0;
+
+            // index is a jQuery object or DOM element
+            if (typeof(index) == 'object') {
+
+                this.siblings.forEach(function(s, idx){
+
+                    if (index[0] === s.link[0]) {
+                        index = idx;
+                    }
+                });
+            }
+
+            // fix index if needed
+            if ( index < 0 ) {
+                index = this.siblings.length - index;
+            } else if (!this.siblings[index]) {
+                index = 0;
+            }
+
+            item   = this.siblings[index];
+
+            data = {
+                lightbox : $this,
+                source   : item.source,
+                type     : item.type,
+                index    : index,
+                promise  : promise,
+                title    : item.title,
+                item     : item,
+                meta     : {
+                    content : '',
+                    width   : null,
+                    height  : null
+                }
+            };
+
+            this.index = index;
+
+            this.modal.content.empty();
+
+            if (!this.modal.is(':visible')) {
+                this.modal.content.css({width:'', height:''}).empty();
+                this.modal.modal.show();
+            }
+
+            this.modal.loader.removeClass('uk-hidden');
+
+            promise.promise().done(function() {
+
+                $this.data = data;
+                $this.fitSize(data);
+
+            }).fail(function(){
+
+                data.meta.content = '<div class="uk-position-cover uk-flex uk-flex-middle uk-flex-center"><strong>Loading resource failed!</strong></div>';
+                data.meta.width   = 400;
+                data.meta.height  = 300;
+
+                $this.data = data;
+                $this.fitSize(data);
+            });
+
+            $this.trigger('showitem.uk.lightbox', [data]);
+        },
+
+        fitSize: function() {
+
+            var $this    = this,
+                data     = this.data,
+                pad      = this.modal.dialog.outerWidth() - this.modal.dialog.width(),
+                dpadTop  = parseInt(this.modal.dialog.css('margin-top'), 10),
+                dpadBot  = parseInt(this.modal.dialog.css('margin-bottom'), 10),
+                dpad     = dpadTop + dpadBot,
+                content  = data.meta.content,
+                duration = $this.options.duration;
+
+            if (this.siblings.length > 1) {
+
+                content = [
+                    content,
+                    '<a href="#" class="uk-slidenav uk-slidenav-contrast uk-slidenav-previous uk-hidden-touch" data-lightbox-previous></a>',
+                    '<a href="#" class="uk-slidenav uk-slidenav-contrast uk-slidenav-next uk-hidden-touch" data-lightbox-next></a>'
+                ].join('');
+            }
+
+            // calculate width
+            var tmp = UI.$('<div>&nbsp;</div>').css({
+                opacity   : 0,
+                position  : 'absolute',
+                top       : 0,
+                left      : 0,
+                width     : '100%',
+                'max-width' : $this.modal.dialog.css('max-width'),
+                padding   : $this.modal.dialog.css('padding'),
+                margin    : $this.modal.dialog.css('margin')
+            }), maxwidth, maxheight, w = data.meta.width, h = data.meta.height;
+
+            tmp.appendTo('body').width();
+
+            maxwidth  = tmp.width();
+            maxheight = window.innerHeight - dpad;
+
+            tmp.remove();
+
+            this.modal.dialog.find('.uk-modal-caption').remove();
+
+            if (data.title) {
+                this.modal.dialog.append('<div class="uk-modal-caption">'+data.title+'</div>');
+                maxheight -= this.modal.dialog.find('.uk-modal-caption').outerHeight();
+            }
+
+            if (maxwidth < data.meta.width) {
+
+                h = Math.floor( h * (maxwidth / w) );
+                w = maxwidth;
+            }
+
+            if (maxheight < h) {
+
+                h = Math.floor(maxheight);
+                w = Math.ceil(data.meta.width * (maxheight/data.meta.height));
+            }
+
+            this.modal.content.css('opacity', 0).width(w).html(content);
+
+            if (data.type == 'iframe') {
+                this.modal.content.find('iframe:first').height(h);
+            }
+
+            var dh   = h + pad,
+                t    = Math.floor(window.innerHeight/2 - dh/2) - dpad;
+
+            if (t < 0) { t = 0; }
+
+            this.modal.closer.addClass('uk-hidden');
+
+            if ($this.modal.data('mwidth') == w &&  $this.modal.data('mheight') == h) {
+                duration = 0;
+            }
+
+            this.modal.dialog.animate({width: w + pad, height: h + pad, top: t }, duration, 'swing', function() {
+                $this.modal.loader.addClass('uk-hidden');
+                $this.modal.content.css({width:''}).animate({'opacity': 1}, function() {
+                    $this.modal.closer.removeClass('uk-hidden');
+                });
+
+                $this.modal.data({'mwidth': w, 'mheight': h});
+            });
+        },
+
+        next: function() {
+            this.show(this.siblings[(this.index+1)] ? (this.index+1) : 0);
+        },
+
+        previous: function() {
+            this.show(this.siblings[(this.index-1)] ? (this.index-1) : this.siblings.length-1);
+        }
+    });
+
+
+    // Plugins
+
+    UI.plugin('lightbox', 'image', {
+
+        init: function(lightbox) {
+
+            lightbox.on("showitem.uk.lightbox", function(e, data){
+
+                if (data.type == 'image' || data.source && data.source.match(/\.(jpg|jpeg|png|gif|svg)$/i)) {
+
+                    var resolve = function(source, width, height) {
+
+                        data.meta = {
+                            content : '<img class="uk-responsive-width" width="'+width+'" height="'+height+'" src ="'+source+'">',
+                            width   : width,
+                            height  : height
+                        };
+
+                        data.type = 'image';
+
+                        data.promise.resolve();
+                    };
+
+                    if (!cache[data.source]) {
+
+                        var img = new Image();
+
+                        img.onerror = function(){
+                            data.promise.reject('Loading image failed');
+                        };
+
+                        img.onload = function(){
+                            cache[data.source] = {width: img.width, height: img.height};
+                            resolve(data.source, cache[data.source].width, cache[data.source].height);
+                        };
+
+                        img.src = data.source;
+
+                    } else {
+                        resolve(data.source, cache[data.source].width, cache[data.source].height);
+                    }
+                }
+            });
+        }
+    });
+
+    UI.plugin("lightbox", "youtube", {
+
+        init: function(lightbox) {
+
+            var youtubeRegExp = /(\/\/.*?youtube\.[a-z]+)\/watch\?v=([^&]+)&?(.*)/,
+                youtubeRegExpShort = /youtu\.be\/(.*)/;
+
+
+            lightbox.on("showitem.uk.lightbox", function(e, data){
+
+                var id, matches, resolve = function(id, width, height) {
+
+                    data.meta = {
+                        content: '<iframe src="//www.youtube.com/embed/'+id+'" width="'+width+'" height="'+height+'" style="max-width:100%;"'+(modal.lightbox.options.allowfullscreen?' allowfullscreen':'')+'></iframe>',
+                        width: width,
+                        height: height
+                    };
+
+                    data.type = 'iframe';
+
+                    data.promise.resolve();
+                };
+
+                if (matches = data.source.match(youtubeRegExp)) {
+                    id = matches[2];
+                }
+
+                if (matches = data.source.match(youtubeRegExpShort)) {
+                    id = matches[1];
+                }
+
+                if (id) {
+
+                    if(!cache[id]) {
+
+                        var img = new Image(), lowres = false;
+
+                        img.onerror = function(){
+                            cache[id] = {width:640, height:320};
+                            resolve(id, cache[id].width, cache[id].height);
+                        };
+
+                        img.onload = function(){
+                            //youtube default 404 thumb, fall back to lowres
+                            if (img.width == 120 && img.height == 90) {
+                                if (!lowres) {
+                                    lowres = true;
+                                    img.src = '//img.youtube.com/vi/' + id + '/0.jpg';
+                                } else {
+                                    cache[id] = {width: 640, height: 320};
+                                    resolve(id, cache[id].width, cache[id].height);
+                                }
+                            } else {
+                                cache[id] = {width: img.width, height: img.height};
+                                resolve(id, img.width, img.height);
+                            }
+                        };
+
+                        img.src = '//img.youtube.com/vi/'+id+'/maxresdefault.jpg';
+
+                    } else {
+                        resolve(id, cache[id].width, cache[id].height);
+                    }
+
+                    e.stopImmediatePropagation();
+                }
+            });
+        }
+    });
+
+
+    UI.plugin("lightbox", "vimeo", {
+
+        init: function(lightbox) {
+
+            var regex = /(\/\/.*?)vimeo\.[a-z]+\/([0-9]+).*?/, matches;
+
+
+            lightbox.on("showitem.uk.lightbox", function(e, data){
+
+                var id, resolve = function(id, width, height) {
+
+                    data.meta = {
+                        content: '<iframe src="//player.vimeo.com/video/'+id+'" width="'+width+'" height="'+height+'" style="width:100%;box-sizing:border-box;"'+(modal.lightbox.options.allowfullscreen?' allowfullscreen':'')+'></iframe>',
+                        width: width,
+                        height: height
+                    };
+
+                    data.type = 'iframe';
+
+                    data.promise.resolve();
+                };
+
+                if (matches = data.source.match(regex)) {
+
+                    id = matches[2];
+
+                    if(!cache[id]) {
+
+                        UI.$.ajax({
+                            type     : 'GET',
+                            url      : '//vimeo.com/api/oembed.json?url=' + encodeURI(data.source),
+                            jsonp    : 'callback',
+                            dataType : 'jsonp',
+                            success  : function(data) {
+                                cache[id] = {width:data.width, height:data.height};
+                                resolve(id, cache[id].width, cache[id].height);
+                            }
+                        });
+
+                    } else {
+                        resolve(id, cache[id].width, cache[id].height);
+                    }
+
+                    e.stopImmediatePropagation();
+                }
+            });
+        }
+    });
+
+    UI.plugin("lightbox", "video", {
+
+        init: function(lightbox) {
+
+            lightbox.on("showitem.uk.lightbox", function(e, data){
+
+
+                var resolve = function(source, width, height) {
+
+                    data.meta = {
+                        content: '<video class="uk-responsive-width" src="'+source+'" width="'+width+'" height="'+height+'" controls></video>',
+                        width: width,
+                        height: height
+                    };
+
+                    data.type = 'video';
+
+                    data.promise.resolve();
+                };
+
+                if (data.type == 'video' || data.source.match(/\.(mp4|webm|ogv)$/i)) {
+
+                    if (!cache[data.source]) {
+
+                        var vid = UI.$('<video style="position:fixed;visibility:hidden;top:-10000px;"></video>').attr('src', data.source).appendTo('body');
+
+                        var idle = setInterval(function() {
+
+                            if (vid[0].videoWidth) {
+                                clearInterval(idle);
+                                cache[data.source] = {width: vid[0].videoWidth, height: vid[0].videoHeight};
+                                resolve(data.source, cache[data.source].width, cache[data.source].height);
+                                vid.remove();
+                            }
+
+                        }, 20);
+
+                    } else {
+                        resolve(data.source, cache[data.source].width, cache[data.source].height);
+                    }
+                }
+            });
+        }
+    });
+
+
+    UIkit.plugin("lightbox", "iframe", {
+
+        init: function (lightbox) {
+
+            lightbox.on("showitem.uk.lightbox", function (e, data) {
+
+                var resolve = function (source, width, height) {
+
+                    data.meta = {
+                        content: '<iframe class="uk-responsive-width" src="' + source + '" width="' + width + '" height="' + height + '"'+(modal.lightbox.options.allowfullscreen?' allowfullscreen':'')+'></iframe>',
+                        width: width,
+                        height: height
+                    };
+
+                    data.type = 'iframe';
+
+                    data.promise.resolve();
+                };
+
+                if (data.type === 'iframe' || data.source.match(/\.(html|php)$/)) {
+                    resolve(data.source, (lightbox.options.width || 800), (lightbox.options.height || 600));
+                }
+            });
+
+        }
+    });
+
+    function getModal(lightbox) {
+
+        if (modal) {
+            modal.lightbox = lightbox;
+            return modal;
+        }
+
+        // init lightbox container
+        modal = UI.$([
+            '<div class="uk-modal">',
+                '<div class="uk-modal-dialog uk-modal-dialog-lightbox uk-slidenav-position" style="margin-left:auto;margin-right:auto;width:200px;height:200px;top:'+Math.abs(window.innerHeight/2 - 200)+'px;">',
+                    '<a href="#" class="uk-modal-close uk-close uk-close-alt"></a>',
+                    '<div class="uk-lightbox-content"></div>',
+                    '<div class="uk-modal-spinner uk-hidden"></div>',
+                '</div>',
+            '</div>'
+        ].join('')).appendTo('body');
+
+        modal.dialog  = modal.find('.uk-modal-dialog:first');
+        modal.content = modal.find('.uk-lightbox-content:first');
+        modal.loader  = modal.find('.uk-modal-spinner:first');
+        modal.closer  = modal.find('.uk-close.uk-close-alt');
+        modal.modal   = UI.modal(modal, {modal:false});
+
+        // next / previous
+        modal.on("swipeRight swipeLeft", function(e) {
+            modal.lightbox[e.type=='swipeLeft' ? 'next':'previous']();
+        }).on("click", "[data-lightbox-previous], [data-lightbox-next]", function(e){
+            e.preventDefault();
+            modal.lightbox[UI.$(this).is('[data-lightbox-next]') ? 'next':'previous']();
+        });
+
+        // destroy content on modal hide
+        modal.on("hide.uk.modal", function(e) {
+            modal.content.html('');
+        });
+
+        var resizeCache = {w: window.innerWidth, h:window.innerHeight};
+
+        UI.$win.on('load resize orientationchange', UI.Utils.debounce(function(e){
+
+            if (resizeCache.w !== window.innerWidth && modal.is(':visible') && !UI.Utils.isFullscreen()) {
+                modal.lightbox.fitSize();
+            }
+
+            resizeCache = {w: window.innerWidth, h:window.innerHeight};
+
+        }, 100));
+
+        modal.lightbox = lightbox;
+
+        return modal;
+    }
+
+    UI.lightbox.create = function(items, options) {
+
+        if (!items) return;
+
+        var group = [], o;
+
+        items.forEach(function(item) {
+
+            group.push(UI.$.extend({
+                source : '',
+                title  : '',
+                type   : 'auto',
+                link   : false
+            }, (typeof(item) == 'string' ? {'source': item} : item)));
+        });
+
+        o = UI.lightbox(UI.$.extend({}, options, {'group':group}));
+
+        return o;
+    };
+
+    return UI.lightbox;
+});
+
+/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(addon) {
+
+    var component;
+
+    if (window.UIkit) {
+        component = addon(UIkit);
+    }
+
+    if (typeof define == "function" && define.amd) {
+        define("uikit-slideset", ["uikit"], function(){
+            return component || addon(UIkit);
+        });
+    }
+
+})(function(UI){
+
+    "use strict";
+
+    var Animations;
+
+    UI.component('slideset', {
+
+        defaults: {
+            default          : 1,
+            animation        : 'fade',
+            duration         : 200,
+            filter           : '',
+            delay            : false,
+            controls         : false,
+            autoplay         : false,
+            autoplayInterval : 7000,
+            pauseOnHover     : true
+        },
+
+        sets: [],
+
+        boot: function() {
+
+            // auto init
+            UI.ready(function(context) {
+
+                UI.$("[data-uk-slideset]", context).each(function(){
+
+                    var ele = UI.$(this);
+
+                    if(!ele.data("slideset")) {
+                        UI.slideset(ele, UI.Utils.options(ele.attr("data-uk-slideset")));
+                    }
+                });
+            });
+        },
+
+        init: function() {
+
+            var $this = this;
+
+            this.activeSet = false;
+            this.list      = this.element.find('.uk-slideset');
+            this.nav       = this.element.find('.uk-slideset-nav');
+            this.controls  = this.options.controls ? UI.$(this.options.controls) : this.element;
+
+            UI.$win.on("resize load", UI.Utils.debounce(function() {
+                $this.update();
+            }, 100));
+
+            $this.list.addClass('uk-grid-width-1-'+$this.options.default);
+
+            ['xlarge', 'large', 'medium', 'small'].forEach(function(bp) {
+
+                if (!$this.options[bp]) {
+                    return;
+                }
+
+                $this.list.addClass('uk-grid-width-'+bp+'-1-'+$this.options[bp]);
+            });
+
+            this.on("click.uk.slideset", '[data-uk-slideset-item]', function(e) {
+
+                e.preventDefault();
+
+                if ($this.animating) {
+                    return;
+                }
+
+                var set = UI.$(this).attr('data-uk-slideset-item');
+
+                if ($this.activeSet === set) return;
+
+                switch(set) {
+                    case 'next':
+                    case 'previous':
+                        $this[set=='next' ? 'next':'previous']();
+                        break;
+                    default:
+                        $this.show(parseInt(set, 10));
+                }
+
+            });
+
+            this.controls.on('click.uk.slideset', '[data-uk-filter]', function(e) {
+
+                var ele = UI.$(this);
+
+                if (ele.parent().hasClass('uk-slideset')) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                if ($this.animating || $this.currentFilter == ele.attr('data-uk-filter')) {
+                    return;
+                }
+
+                $this.updateFilter(ele.attr('data-uk-filter'));
+
+                $this._hide().then(function(){
+
+                    $this.update(true, true);
+                });
+            });
+
+            this.on('swipeRight swipeLeft', function(e) {
+                $this[e.type=='swipeLeft' ? 'next' : 'previous']();
+            });
+
+            this.updateFilter(this.options.filter);
+            this.update();
+
+            this.element.on({
+                mouseenter: function() { if ($this.options.pauseOnHover) $this.hovering = true;  },
+                mouseleave: function() { $this.hovering = false; }
+            });
+
+            // Set autoplay
+            if (this.options.autoplay) {
+                this.start();
+            }
+
+            UI.domObserve(this.list, function(e) {
+                if ($this.list.children(':visible:not(.uk-active)').length) {
+                    $this.update(false,true);
+                }
+            });
+        },
+
+        update: function(animate, force) {
+
+            var visible = this.visible, i;
+
+            this.visible  = this.getVisibleOnCurrenBreakpoint();
+
+            if (visible == this.visible && !force) {
+                return;
+            }
+
+            this.children = this.list.children().hide();
+            this.items    = this.getItems();
+            this.sets     = array_chunk(this.items, this.visible);
+
+            for (i=0;i<this.sets.length;i++) {
+                this.sets[i].css({'display': 'none'});
+            }
+
+            // update nav
+            if (this.nav.length && this.nav.empty()) {
+
+                for (i=0;i<this.sets.length;i++) {
+                    this.nav.append('<li data-uk-slideset-item="'+i+'"><a></a></li>');
+                }
+
+                this.nav[this.nav.children().length==1 ? 'addClass':'removeClass']('uk-invisible');
+            }
+
+            this.activeSet = false;
+            this.show(0, !animate);
+        },
+
+        updateFilter: function(currentfilter) {
+
+            var $this = this, filter;
+
+            this.currentFilter = currentfilter;
+
+            this.controls.find('[data-uk-filter]').each(function(){
+
+                filter = UI.$(this);
+
+                if (!filter.parent().hasClass('uk-slideset')) {
+
+                    if (filter.attr('data-uk-filter') == $this.currentFilter) {
+                        filter.addClass('uk-active');
+                    } else {
+                        filter.removeClass('uk-active');
+                    }
+                }
+            });
+        },
+
+        getVisibleOnCurrenBreakpoint: function() {
+
+            var breakpoint  = null,
+                tmp         = UI.$('<div style="position:absolute;height:1px;top:-1000px;width:100px"><div></div></div>').appendTo('body'),
+                testdiv     = tmp.children().eq(0),
+                breakpoints = this.options;
+
+                ['xlarge', 'large', 'medium', 'small'].forEach(function(bp) {
+
+                    if (!breakpoints[bp] || breakpoint) {
+                        return;
+                    }
+
+                    tmp.attr('class', 'uk-grid-width-'+bp+'-1-2').width();
+
+                    if (testdiv.width() == 50) {
+                        breakpoint = bp;
+                    }
+                });
+
+                tmp.remove();
+
+                return this.options[breakpoint] || this.options['default'];
+        },
+
+        getItems: function() {
+
+            var items = [], filter;
+
+            if (this.currentFilter) {
+
+                filter = this.currentFilter || [];
+
+                if (typeof(filter) === 'string') {
+                    filter = filter.split(/,/).map(function(item){ return item.trim(); });
+                }
+
+                this.children.each(function(index){
+
+                    var ele = UI.$(this), f = ele.attr('data-uk-filter'), infilter = filter.length ? false : true;
+
+                    if (f) {
+
+                        f = f.split(/,/).map(function(item){ return item.trim(); });
+
+                        filter.forEach(function(item){
+                            if (f.indexOf(item) > -1) infilter = true;
+                        });
+                    }
+
+                    if(infilter) items.push(ele[0]);
+                });
+
+                items = UI.$(items);
+
+            } else {
+                items = this.list.children();
+            }
+
+            return items;
+        },
+
+        show: function(setIndex, noanimate, dir) {
+
+            var $this = this;
+
+            if (this.activeSet === setIndex || this.animating) {
+                return;
+            }
+
+            dir = dir || (setIndex < this.activeSet ? -1:1);
+
+            var current   = this.sets[this.activeSet] || [],
+                next      = this.sets[setIndex],
+                animation = this._getAnimation();
+
+            if (noanimate || !UI.support.animation) {
+                animation = Animations.none;
+            }
+
+            this.animating = true;
+
+            if (this.nav.length) {
+                this.nav.children().removeClass('uk-active').eq(setIndex).addClass('uk-active');
+            }
+
+            animation.apply($this, [current, next, dir]).then(function(){
+
+                UI.Utils.checkDisplay(next, true);
+
+                $this.children.hide().removeClass('uk-active');
+                next.addClass('uk-active').css({'display': '', 'opacity':''});
+
+                $this.animating = false;
+                $this.activeSet = setIndex;
+
+                UI.Utils.checkDisplay(next, true);
+
+                $this.trigger('show.uk.slideset', [next]);
+            });
+
+        },
+
+        _getAnimation: function() {
+
+            var animation = Animations[this.options.animation] || Animations.none;
+
+            if (!UI.support.animation) {
+                animation = Animations.none;
+            }
+
+            return animation;
+        },
+
+        _hide: function() {
+
+            var $this     = this,
+                current   = this.sets[this.activeSet] || [],
+                animation = this._getAnimation();
+
+            this.animating = true;
+
+            return animation.apply($this, [current, [], 1]).then(function(){
+                $this.animating = false;
+            });
+        },
+
+        next: function() {
+            this.show(this.sets[this.activeSet + 1] ? (this.activeSet + 1) : 0, false, 1);
+        },
+
+        previous: function() {
+            this.show(this.sets[this.activeSet - 1] ? (this.activeSet - 1) : (this.sets.length - 1), false, -1);
+        },
+
+        start: function() {
+
+            this.stop();
+
+            var $this = this;
+
+            this.interval = setInterval(function() {
+                if (!$this.hovering && !$this.animating) $this.next();
+            }, this.options.autoplayInterval);
+
+        },
+
+        stop: function() {
+            if (this.interval) clearInterval(this.interval);
+        }
+    });
+
+    Animations = {
+
+        'none': function() {
+            var d = UI.$.Deferred();
+            d.resolve();
+            return d.promise();
+        },
+
+        'fade': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-fade', current, next]);
+        },
+
+        'slide-bottom': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-slide-bottom', current, next]);
+        },
+
+        'slide-top': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-slide-top', current, next]);
+        },
+
+        'slide-vertical': function(current, next, dir) {
+
+            var anim = ['uk-animation-slide-top', 'uk-animation-slide-bottom'];
+
+            if (dir == -1) {
+                anim.reverse();
+            }
+
+            return coreAnimation.apply(this, [anim, current, next]);
+        },
+
+        'slide-horizontal': function(current, next, dir) {
+
+            var anim = ['uk-animation-slide-right', 'uk-animation-slide-left'];
+
+            if (dir == -1) {
+                anim.reverse();
+            }
+
+            return coreAnimation.apply(this, [anim, current, next, dir]);
+        },
+
+        'scale': function(current, next) {
+            return coreAnimation.apply(this, ['uk-animation-scale-up', current, next]);
+        }
+    };
+
+    UI.slideset.animations = Animations;
+
+    // helpers
+
+    function coreAnimation(cls, current, next, dir) {
+
+        var d     = UI.$.Deferred(),
+            delay = (this.options.delay === false) ? Math.floor(this.options.duration/2) : this.options.delay,
+            $this = this, clsIn, clsOut, release, i;
+
+        dir = dir || 1;
+
+        this.element.css('min-height', this.element.height());
+
+        if (next[0]===current[0]) {
+            d.resolve();
+            return d.promise();
+        }
+
+        if (typeof(cls) == 'object') {
+            clsIn  = cls[0];
+            clsOut = cls[1] || cls[0];
+        } else {
+            clsIn  = cls;
+            clsOut = clsIn;
+        }
+
+        UI.$body.css('overflow-x', 'hidden'); // prevent horizontal scrollbar on animation
+
+        release = function() {
+
+            if (current && current.length) {
+                current.hide().removeClass(clsOut+' uk-animation-reverse').css({'opacity':'', 'animation-delay': '', 'animation':''});
+            }
+
+            if (!next.length) {
+                d.resolve();
+                return;
+            }
+
+            for (i=0;i<next.length;i++) {
+                next.eq(dir == 1 ? i:(next.length - i)-1).css('animation-delay', (i*delay)+'ms');
+            }
+
+            var finish = function() {
+                next.removeClass(''+clsIn+'').css({opacity:'', display:'', 'animation-delay':'', 'animation':''});
+                d.resolve();
+                UI.$body.css('overflow-x', '');
+                $this.element.css('min-height', '');
+                finish = false;
+            };
+
+            next.addClass(clsIn)[dir==1 ? 'last':'first']().one(UI.support.animation.end, function(){
+                if(finish) finish();
+            }).end().css('display', '');
+
+            // make sure everything resolves really
+            setTimeout(function() {
+                if(finish) finish();
+            },  next.length * delay * 2);
+        };
+
+        if (next.length) {
+            next.css('animation-duration', this.options.duration+'ms');
+        }
+
+        if (current && current.length) {
+
+            current.css('animation-duration', this.options.duration+'ms')[dir==1 ? 'last':'first']().one(UI.support.animation.end, function() {
+                release();
+            });
+
+            for (i=0;i<current.length;i++) {
+
+                (function (index, ele){
+
+                    setTimeout(function(){
+
+                        ele.css('display', 'none').css('display', '').css('opacity', 0).on(UI.support.animation.end, function(){
+                            ele.removeClass(clsOut);
+                        }).addClass(clsOut+' uk-animation-reverse');
+
+                    }.bind(this), i * delay);
+
+                })(i, current.eq(dir == 1 ? i:(current.length - i)-1));
+            }
+
+        } else {
+            release();
+        }
+
+        return d.promise();
+    }
+
+    function array_chunk(input, size) {
+
+        var x, i = 0, c = -1, l = input.length || 0, n = [];
+
+        if (size < 1) return null;
+
+        while (i < l) {
+
+            x = i % size;
+
+            if(x) {
+                n[c][x] = input[i];
+            } else {
+                n[++c] = [input[i]];
+            }
+
+            i++;
+        }
+
+        i = 0;
+        l = n.length;
+
+        while (i < l) {
+            n[i] = jQuery(n[i]);
+            i++;
+        }
+
+        return n;
+    }
 
 });

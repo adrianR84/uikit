@@ -15,14 +15,14 @@
 @global-muted-color:                            #999;
 @global-text-shadow:                            #222;
 
-@global-link-color:                             #1F41C7;
-@global-link-hover-color:                       lighten(#1F41C7, 20%);
+@global-link-color:                             #5C2745;
+@global-link-hover-color:                       lighten(#5C2745, 20%);
 
 @global-contrast-color:                         #fff;
 @global-contrast-text-shadow:                   rgba(0,0,0,0.2);
 
-@global-font-size:                              17px;
-@global-line-height:                            25px;
+@global-font-size:                              14px;
+@global-line-height:                            20px;
 
 //
 // Backgrounds & Borders
@@ -31,7 +31,7 @@
 @global-background:                             #fff;
 @global-border:                                 @global-primary-background;
 
-@global-border-radius:                          4px;
+@global-border-radius:                          0px;
 
 @global-default-gradient-top:                   #fff;
 @global-default-gradient-bottom:                #eee;
@@ -39,20 +39,20 @@
 @global-default-hover-background:               #fafafa;
 @global-default-active-background:              #f5f5f5;
 
-@global-primary-gradient-top:                   #42549c;
-@global-primary-gradient-bottom:                darken(#42549c, 20%);
+@global-primary-gradient-top:                   #5C2745;
+@global-primary-gradient-bottom:                lighten(#5C2745, 10%);
 @global-primary-background:                     mix(@global-primary-gradient-top, @global-primary-gradient-bottom, 40%);
 
-@global-success-gradient-top:                   #34C97E;
-@global-success-gradient-bottom:                darken(#34C97E, 20%);
+@global-success-gradient-top:                   #4C7CA8;
+@global-success-gradient-bottom:                darken(#4C7CA8, 20%);
 @global-success-background:                     mix(@global-success-gradient-top, @global-success-gradient-bottom, 40%);
 
-@global-warning-gradient-top:                   #F7B859;
-@global-warning-gradient-bottom:                darken(#F7B859, 20%);
+@global-warning-gradient-top:                   #F29941;
+@global-warning-gradient-bottom:                darken(#F29941, 20%);
 @global-warning-background:                     mix(@global-warning-gradient-top, @global-warning-gradient-bottom, 40%);
 
-@global-danger-gradient-top:                    #E54985;
-@global-danger-gradient-bottom:                 darken(#E54985, 20%);
+@global-danger-gradient-top:                    #CC3729;
+@global-danger-gradient-bottom:                 darken(#CC3729, 20%);
 @global-danger-background:                      mix(@global-danger-gradient-top, @global-danger-gradient-bottom, 40%);
 
 //
@@ -100,6 +100,17 @@
 
 
 
+// px to em conversion
+.fontSize-px2em( @target: @basefont, @context: @basefont ) {
+    font-size: (@target / @context) + 0em;
+}
 
+// px to em conversion
+.lineHeight-px2em( @target: @basefont, @context: @basefont ) {
+    line-height: (@target / @context) + 0em;
+}
 
-
+.uk-border-rounded
+{
+  border-radius: @global-border-radius;
+}

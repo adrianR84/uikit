@@ -1,0 +1,120 @@
+//
+// Component: Form
+//
+// ========================================================================
+
+
+// Variables
+// ========================================================================
+
+@form-height:                                   @global-height;
+@form-border:                                   @global-border;
+@form-background:                               @global-background;
+@form-color:                                    @global-color;
+
+@form-focus-color:                              @global-color;
+
+@form-disabled-border:                          @global-border;
+@form-disabled-background:                      #fafafa;
+@form-disabled-color:                           @global-muted-color;
+
+@form-placeholder-color:                        @global-muted-color;
+
+@form-gutter:                                   @global-margin;
+
+@form-legend-border:                            @global-border;
+@form-legend-font-size:                         round((@global-font-size * 1.28)); // 18px / 20px
+@form-legend-line-height:                       round((@form-legend-font-size * 1.68)); // 30px / 34px
+
+@form-small-height:                             @global-height-small;
+@form-large-height:                             @global-height-large;
+@form-small-font-size:                          round((@global-font-size * 0.85)); // 12px / 14px
+@form-large-font-size:                          round((@global-font-size * 1.14)); // 16px / 18px
+
+@form-blank-border:                             @global-border;
+
+@form-icon-font-size:                           @global-font-size;
+@form-icon-color:                               @global-muted-color;
+
+
+/*================================
+=            modified            =
+================================*/
+
+@form-border:                                   lighten(@global-border, 20%);
+
+@form-focus-border:                             darken(@global-primary-background,20%);
+@form-focus-background:                         @form-background;
+
+@form-danger-border:                            @global-danger-background;
+@form-danger-background:                        fade(lighten(@global-danger-background, 40%), 10%);
+@form-danger-color:                             @global-danger-background;
+
+@form-success-border:                           @global-success-background;
+@form-success-background:                       fade(lighten(@global-success-background, 40%), 10%);
+@form-success-color:                            @global-success-background;
+
+@form-disabled-border:                          @global-muted-color;
+@form-disabled-background:                      fade(#f5f5f5, 50%);
+@form-disabled-color:                           #999;
+
+/*=====  End of modified  ======*/
+
+
+
+// Component
+// ========================================================================
+
+.hook-form() { 
+	//border:0px; border-bottom:@form-border-width solid @form-border; 
+	.uk-border-rounded;
+}
+
+// Focus state
+.hook-form-focus() {
+	 box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, .3);
+}
+
+// Disabled state
+.hook-form-disabled() {}
+
+// Legend
+.hook-form-legend() {}
+
+
+// Validation states
+// ========================================================================
+
+//
+// Error state
+//
+
+.hook-form-danger() { }
+
+//
+// Success state
+//
+
+.hook-form-success() {}
+
+
+// Style modifiers
+// ========================================================================
+
+.hook-form-blank() {}
+
+.hook-form-blank-focus() {}
+
+
+// Sub-object: `uk-form-label`
+// ========================================================================
+
+.hook-form-stacked-label() {}
+
+.hook-form-horizontal-label() {}
+
+
+// Miscellaneous
+// ========================================================================
+
+.hook-form-misc() {}

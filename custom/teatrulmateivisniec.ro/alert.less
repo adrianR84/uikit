@@ -1,0 +1,68 @@
+//
+// Component: Alert
+//
+// ========================================================================
+
+
+// Variables
+// ========================================================================
+
+@alert-margin-vertical:                         @global-margin;
+
+//
+// New
+//
+
+@alert-border:                                  fade(@alert-color, 30%);
+@alert-text-shadow:                             @global-text-shadow;
+
+@alert-success-border:                          fade(@alert-success-color, 30%);
+@alert-warning-border:                          fade(@alert-warning-color, 30%);
+@alert-danger-border:                           fade(@alert-danger-color, 30%);
+
+
+
+@alert-background:                              @global-default-background;
+@alert-color:                                   #000;
+
+@alert-success-background:                      @global-success-background;
+@alert-success-color:                           #fff;
+
+@alert-warning-background:                      @global-warning-background;
+@alert-warning-color:                           #fff;
+
+@alert-danger-background:                       @global-danger-background;
+@alert-danger-color:                            #fff;
+
+
+// Component
+// ========================================================================
+
+.hook-alert() {
+    border-radius: @global-border-radius;
+    background: @alert-background;
+}
+
+
+// Modifier: `uk-alert-success`
+// ========================================================================
+
+.hook-alert-success() { background: @alert-success-background; }
+
+
+// Modifier: `uk-alert-warning`
+// ========================================================================
+
+.hook-alert-warning() { background: @alert-warning-background; }
+
+
+// Modifier: `uk-alert-danger`
+// ========================================================================
+
+.hook-alert-danger() { background: @alert-danger-background; }
+
+
+// Miscellaneous
+// ========================================================================
+
+.hook-alert-misc() {}

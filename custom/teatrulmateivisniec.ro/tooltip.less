@@ -1,0 +1,63 @@
+//
+// Component: Tooltip
+//
+// ========================================================================
+
+
+// Variables
+// ========================================================================
+
+@tooltip-z-index:                               @global-z-index + 30;
+
+@tooltip-font-size:                             round((@global-font-size * 0.85)); // 12px / 14px
+@tooltip-line-height:                           round((@tooltip-font-size * 1.46)); // 18px / 20px
+
+//
+// New
+//
+
+@tooltip-text-shadow:                           rgba(0,0,0,0.5);
+
+
+
+
+/*================================
+=            modified            =
+================================*/
+
+@tooltip-background:                            @global-primary-background;
+@tooltip-color:                                 @global-contrast-color;
+@tooltip-max-width: 	                          300px;
+@tooltip-triangle-size:                         5px;
+@tooltip-padding-vertical:                      8px;
+@tooltip-padding-horizontal:                    8px;
+
+/*=====  End of modified  ======*/
+
+
+
+// Component
+// ========================================================================
+
+.hook-tooltip() {
+    border-radius: @global-border-radius;
+    //text-shadow: 0 1px 0 @tooltip-text-shadow;
+    box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, .3);
+}
+
+
+// Miscellaneous
+// ========================================================================
+
+.hook-tooltip-misc() {
+
+	// .uk-tooltip
+	// {
+	// 	&.uk-active{
+	// 		background: @global-contrast-color;
+	// 		color: @global-color;
+	// 		border:1px @tooltip-background solid;
+	// 	}
+	// }
+
+}
