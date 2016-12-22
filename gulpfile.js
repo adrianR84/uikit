@@ -809,6 +809,81 @@ gulp.task('getTheme-' + themeName, ['getBowerFile-' + themeName, 'getThemeJs-' +
 
 
 
+/*==========================================
+=            CinemaSuceava.ro - Script       =
+==========================================*/
+
+(function() {
+
+// change only themeName variable
+var themeName = 'cinemasuceava.ro-script';
+
+
+var destFolder = '_theme/' + themeName + '/';
+var destFolderProject = "../../cinemasuceava.ro/site/site/templates/_scriptMovies/" ;
+
+
+gulp.task('getThemeJs-' + themeName, function() {
+    src = "dist/js/";
+    srcComp = "dist/js/components/";
+        
+    gulp.src([
+    
+    src + "core/core.js",
+    src + "core/grid.js",
+    //src + "core/modal.js",
+    //'!' + src + "core/*min.js",
+
+    srcComp + 'slider.js',
+    //srcComp + 'lightbox.js',
+    
+    ])
+        .pipe(concat('uikit.js'))
+        // .pipe(gulp.dest(destFolder + 'js/'))
+        // .pipe(rename({ suffix: '.min' }))
+        // .pipe(uglify())
+        .pipe(gulp.dest(destFolder + 'js/'));
+      
+});
+
+gulp.task('getThemeCss-' + themeName, function() {
+    src = "dist/css/";
+    srcComp = "dist/css/components/";
+
+    return gulp.src([
+    src + "*" + themeName + ".css",
+    
+    //srcComp + 'dotnav.' + themeName + ".css",
+    srcComp + 'slidenav.' + themeName + ".css",
+    srcComp + 'slider.' + themeName + ".css",
+    ])
+        .pipe(concat('uikit.css'))
+        // .pipe(gulp.dest(destFolder + 'css/'))
+        // .pipe(rename({ suffix: '.min' }))
+        // .pipe(minifycss({advanced:false}))
+        .pipe(gulp.dest(destFolder + 'css/'));
+});
+
+gulp.task('getThemeFonts-' + themeName, function() {
+    src = "dist/fonts/";
+    return gulp.src(src + "*")
+        .pipe(gulp.dest(destFolder + 'fonts/'));
+});
+
+gulp.task('getTheme-' + themeName, ['getThemeJs-' + themeName, 'getThemeCss-' + themeName], function() {
+    src = destFolder + "**/*";
+    dest = destFolderProject;
+    return gulp.src(src)
+         .pipe(gulp.dest(dest));
+});
+
+})();
+
+/*=====  End of CinemaSuceava.ro - Script ======*/
+
+
+
+
 
 /*==========================================
 =            AdrianRomega.co.uk            =

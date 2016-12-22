@@ -1,4 +1,4 @@
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /*==========================================
 =            include core uikit            =
 ==========================================*/
@@ -2083,6 +2083,129 @@ html:not(.uk-touch) .uk-nav-offcanvas ul a:hover {
   border-radius: 0 !important;
 }
 /* ========================================================================
+   Component: Subnav
+ ========================================================================== */
+/*
+ * 1. Gutter
+ * 2. Remove default list style
+ */
+.uk-subnav {
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  /* 1 */
+  margin-left: -10px;
+  margin-top: -10px;
+  /* 2 */
+  padding: 0;
+  list-style: none;
+}
+/*
+ * 1. Space is allocated solely based on content dimensions
+ * 2. Horizontal gutter is using `padding` so `uk-width-*` classes can be applied
+ * 3. Create position context for dropdowns
+ */
+.uk-subnav > * {
+  /* 1 */
+  -ms-flex: none;
+  -webkit-flex: none;
+  flex: none;
+  /* 2 */
+  padding-left: 10px;
+  margin-top: 10px;
+  /* 3 */
+  position: relative;
+}
+/*
+ * DEPRECATED IE9 Support
+ */
+.uk-subnav:before,
+.uk-subnav:after {
+  content: "";
+  display: block;
+  overflow: hidden;
+}
+.uk-subnav:after {
+  clear: both;
+}
+.uk-subnav > * {
+  float: left;
+}
+/* Items
+ ========================================================================== */
+.uk-subnav > * > * {
+  display: inline-block;
+  color: #333;
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ */
+.uk-subnav > * > :hover,
+.uk-subnav > * > :focus {
+  color: #5C2745;
+  text-decoration: none;
+}
+/*
+ * Active
+ */
+.uk-subnav > .uk-active > * {
+  color: #5C2745;
+}
+/* Modifier: 'subnav-line'
+ ========================================================================== */
+.uk-subnav-line > :before {
+  content: "";
+  display: inline-block;
+  height: 10px;
+  vertical-align: middle;
+}
+.uk-subnav-line > :nth-child(n+2):before {
+  margin-right: 10px;
+  border-left: 1px solid #713055;
+}
+/* Modifier: 'subnav-pill'
+ ========================================================================== */
+.uk-subnav-pill > * > * {
+  padding: 3px 9px;
+  border-radius: 5px;
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ * 2. Remove default focus style
+ */
+.uk-subnav-pill > * > :hover,
+.uk-subnav-pill > * > :focus {
+  background: #fafafa;
+  color: #333;
+  text-decoration: none;
+  /* 2 */
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+/*
+ * Active
+ * `li` needed for higher specificity to override hover
+ */
+.uk-subnav-pill > .uk-active > * {
+  background: #713055;
+  color: #fff;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+/* Disabled state
+ ========================================================================== */
+.uk-subnav > .uk-disabled > * {
+  background: none;
+  color: #999;
+  text-decoration: none;
+  cursor: text;
+  box-shadow: none;
+}
+/* ========================================================================
    Component: Breadcrumb
  ========================================================================== */
 /*
@@ -2648,7 +2771,7 @@ html:not(.uk-touch) .uk-nav-offcanvas ul a:hover {
 .uk-table th,
 .uk-table td {
   padding: 8px 8px;
-  border-bottom: 1px solid #713055;
+  border-bottom: 1px solid #d49abb;
 }
 /*
  * Set alignment
@@ -4653,6 +4776,10 @@ a.uk-thumbnail:focus {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+/* Focus */
+.uk-dropdown:focus {
+  outline: none;
+}
 /*
  * 1. Show dropdown
  * 2. Set animation
@@ -6189,7 +6316,7 @@ a.uk-thumbnail:focus {
 ================================*/
 /*=====  End of modified  ======*/
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Tooltip
  ========================================================================== */
@@ -6214,6 +6341,7 @@ a.uk-thumbnail:focus {
   color: #fff;
   font-size: 12px;
   line-height: 18px;
+  word-break: break-all;
   border-radius: 5px;
   box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.3);
 }
@@ -6315,7 +6443,7 @@ a.uk-thumbnail:focus {
 ================================*/
 /*=====  End of modified  ======*/
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Dotnav
  ========================================================================== */
@@ -6447,7 +6575,7 @@ a.uk-thumbnail:focus {
   border-radius: 5px;
 }
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Slidenav
  ========================================================================== */
@@ -6549,7 +6677,7 @@ a.uk-thumbnail:focus {
   border-radius: 5px;
 }
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Progress
  ========================================================================== */
@@ -6665,7 +6793,7 @@ a.uk-thumbnail:focus {
   border-radius: 5px;
 }
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Slideshow
  ========================================================================== */
