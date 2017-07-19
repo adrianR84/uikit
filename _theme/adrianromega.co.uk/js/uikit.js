@@ -1,18 +1,18 @@
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(core) {
 
-    if (typeof define == "function" && define.amd) { // AMD
+    if (typeof define == 'function' && define.amd) { // AMD
 
-        define("uikit", function(){
+        define('uikit', function(){
 
-            var uikit = window.UIkit || core(window, window.jQuery, window.document);
+            var uikit = window.UIkit2 || core(window, window.jQuery, window.document);
 
             uikit.load = function(res, req, onload, config) {
 
-                var resources = res.split(','), load = [], i, base = (config.config && config.config.uikit && config.config.uikit.base ? config.config.uikit.base : "").replace(/\/+$/g, "");
+                var resources = res.split(','), load = [], i, base = (config.config && config.config.uikit && config.config.uikit.base ? config.config.uikit.base : '').replace(/\/+$/g, '');
 
                 if (!base) {
-                    throw new Error( "Please define base path to UIkit in the requirejs config." );
+                    throw new Error('Please define base path to UIkit in the requirejs config.');
                 }
 
                 for (i = 0; i < resources.length; i += 1) {
@@ -30,21 +30,20 @@
     }
 
     if (!window.jQuery) {
-        throw new Error( "UIkit requires jQuery" );
+        throw new Error('UIkit 2.x requires jQuery');
     }
 
-    if (window && window.jQuery) {
+    if (window && window.jQuery && !window.UIkit2) {
         core(window, window.jQuery, window.document);
     }
-
 
 })(function(global, $, doc) {
 
     "use strict";
 
-    var UI = {}, _UI = global.UIkit ? Object.create(global.UIkit) : undefined;
+    var UI = {}, _UI = global.UIkit || undefined;
 
-    UI.version = '2.27.1';
+    UI.version = '2.27.2';
 
     UI.noConflict = function() {
         // restore UIkit version
@@ -57,9 +56,11 @@
         return UI;
     };
 
-    UI.prefix = function(str) {
-        return str;
-    };
+    global.UIkit2 = UI;
+
+    if (!_UI) {
+        global.UIkit = UI;
+    }
 
     // cache jQuery
     UI.$ = $;
@@ -161,7 +162,7 @@
                     .replace(/'([^']+)'/g, function(_, $1){return '"'+$1+'"';})
                 );
             } else {
-                return (new Function("", "var json = " + str + "; return JSON.parse(JSON.stringify(json));"))();
+                return (new Function('', 'var json = ' + str + '; return JSON.parse(JSON.stringify(json));'))();
             }
         } catch(e) { return false; }
     };
@@ -327,30 +328,30 @@
 
                 switch(cmd) {
                     case '~':
-                        output.push("for(var $i=0;$i<"+prop+".length;$i++) { var $item = "+prop+"[$i];");
+                        output.push('for(var $i=0;$i<'+prop+'.length;$i++) { var $item = '+prop+'[$i];');
                         openblocks++;
                         break;
                     case ':':
-                        output.push("for(var $key in "+prop+") { var $val = "+prop+"[$key];");
+                        output.push('for(var $key in '+prop+') { var $val = '+prop+'[$key];');
                         openblocks++;
                         break;
                     case '#':
-                        output.push("if("+prop+") {");
+                        output.push('if('+prop+') {');
                         openblocks++;
                         break;
                     case '^':
-                        output.push("if(!"+prop+") {");
+                        output.push('if(!'+prop+') {');
                         openblocks++;
                         break;
                     case '/':
-                        output.push("}");
+                        output.push('}');
                         openblocks--;
                         break;
                     case '!':
-                        output.push("__ret.push("+prop+");");
+                        output.push('__ret.push('+prop+');');
                         break;
                     default:
-                        output.push("__ret.push(escape("+prop+"));");
+                        output.push('__ret.push(escape('+prop+'));');
                         break;
                 }
             } else {
@@ -408,8 +409,6 @@
     UI.Utils.events       = {};
     UI.Utils.events.click = UI.support.touch ? 'tap' : 'click';
 
-    global.UIkit = UI;
-
     // deprecated
 
     UI.fn = function(command, options) {
@@ -417,7 +416,7 @@
         var args = arguments, cmd = command.match(/^([a-z\-]+)(?:\.([a-z]+))?/i), component = cmd[1], method = cmd[2];
 
         if (!UI[component]) {
-            $.error("UIkit component [" + component + "] does not exist.");
+            $.error('UIkit component [' + component + '] does not exist.');
             return this;
         }
 
@@ -435,7 +434,11 @@
 
     UI.components    = {};
 
-    UI.component = function(name, def) {
+    UI.component = function(name, def, override) {
+
+        if (UI.components[name] && !override) {
+            return UI.components[name];
+        }
 
         var fn = function(element, options) {
 
@@ -535,7 +538,7 @@
                 switch(arguments.length) {
                     case 1:
 
-                        if (typeof arguments[0] === "string" || arguments[0].nodeType || arguments[0] instanceof jQuery) {
+                        if (typeof arguments[0] === 'string' || arguments[0].nodeType || arguments[0] instanceof jQuery) {
                             element = $(arguments[0]);
                         } else {
                             options = arguments[0];
@@ -790,7 +793,7 @@
     }());
 
     // add touch identifier class
-    UI.$html.addClass(UI.support.touch ? "uk-touch" : "uk-notouch");
+    UI.$html.addClass(UI.support.touch ? 'uk-touch' : 'uk-notouch');
 
     // add uk-hover class on tap to support overlays on touch devices
     if (UI.support.touch) {
@@ -819,7 +822,7 @@
     return UI;
 });
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(UI) {
 
     "use strict";
@@ -840,11 +843,11 @@
             // init code
             UI.ready(function(context) {
 
-                UI.$("[data-uk-grid-match]", context).each(function() {
+                UI.$('[data-uk-grid-match]', context).each(function() {
                     var grid = UI.$(this), obj;
 
-                    if (!grid.data("gridMatchHeight")) {
-                        obj = UI.gridMatchHeight(grid, UI.Utils.options(grid.attr("data-uk-grid-match")));
+                    if (!grid.data('gridMatchHeight')) {
+                        obj = UI.gridMatchHeight(grid, UI.Utils.options(grid.attr('data-uk-grid-match')));
                     }
                 });
             });
@@ -862,7 +865,7 @@
             UI.$win.on('load resize orientationchange', (function() {
 
                 var fn = function() {
-                    if ($this.element.is(":visible")) $this.match();
+                    if ($this.element.is(':visible')) $this.match();
                 };
 
                 UI.$(function() { fn(); });
@@ -873,12 +876,12 @@
             if (this.options.observe) {
 
                 UI.domObserve(this.element, function(e) {
-                    if ($this.element.is(":visible")) $this.match();
+                    if ($this.element.is(':visible')) $this.match();
                 });
             }
 
-            this.on("display.uk.check", function(e) {
-                if(this.element.is(":visible")) this.match();
+            this.on('display.uk.check', function(e) {
+                if(this.element.is(':visible')) this.match();
             }.bind(this));
 
             grids.push(this);
@@ -886,7 +889,7 @@
 
         match: function() {
 
-            var firstvisible = this.columns.filter(":visible:first");
+            var firstvisible = this.columns.filter(':visible:first');
 
             if (!firstvisible.length) return;
 
@@ -919,11 +922,11 @@
             // init code
             UI.ready(function(context) {
 
-                UI.$("[data-uk-grid-margin]", context).each(function() {
+                UI.$('[data-uk-grid-margin]', context).each(function() {
                     var grid = UI.$(this), obj;
 
-                    if (!grid.data("gridMargin")) {
-                        obj = UI.gridMargin(grid, UI.Utils.options(grid.attr("data-uk-grid-margin")));
+                    if (!grid.data('gridMargin')) {
+                        obj = UI.gridMargin(grid, UI.Utils.options(grid.attr('data-uk-grid-margin')));
                     }
                 });
             });
@@ -935,16 +938,16 @@
         }
     });
 
-})(UIkit);
+})(UIkit2);
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(UI) {
 
     "use strict";
 
     var active = false, activeCount = 0, $html = UI.$html, body;
 
-    UI.$win.on("resize orientationchange", UI.Utils.debounce(function(){
+    UI.$win.on('resize orientationchange', UI.Utils.debounce(function(){
         UI.$('.uk-modal.uk-open').each(function(){
             return UI.$(this).data('modal') && UI.$(this).data('modal').resize();
         });
@@ -972,18 +975,18 @@
 
             var $this = this;
 
-            this.paddingdir = "padding-" + (UI.langdirection == 'left' ? "right":"left");
-            this.dialog     = this.find(".uk-modal-dialog");
+            this.paddingdir = 'padding-' + (UI.langdirection == 'left' ? 'right':'left');
+            this.dialog     = this.find('.uk-modal-dialog');
 
             this.active     = false;
 
             // Update ARIA
-            this.element.attr('aria-hidden', this.element.hasClass("uk-open"));
+            this.element.attr('aria-hidden', this.element.hasClass('uk-open'));
 
-            this.on("click", ".uk-modal-close", function(e) {
+            this.on('click', '.uk-modal-close', function(e) {
                 e.preventDefault();
                 $this.hide();
-            }).on("click", function(e) {
+            }).on('click', function(e) {
 
                 var target = UI.$(e.target);
 
@@ -996,7 +999,7 @@
         },
 
         toggle: function() {
-            return this[this.isActive() ? "hide" : "show"]();
+            return this[this.isActive() ? 'hide' : 'show']();
         },
 
         show: function() {
@@ -1011,7 +1014,7 @@
                 active.hide(true);
             }
 
-            this.element.removeClass("uk-open").show();
+            this.element.removeClass('uk-open').show();
             this.resize(true);
 
             if (this.options.modal) {
@@ -1027,18 +1030,18 @@
                 this.element.one(UI.support.transition.end, function(){
                     $this.hasTransitioned = true;
                     UI.Utils.focus($this.dialog, 'a[href]');
-                }).addClass("uk-open");
+                }).addClass('uk-open');
             } else {
-                this.element.addClass("uk-open");
+                this.element.addClass('uk-open');
                 UI.Utils.focus(this.dialog, 'a[href]');
             }
 
-            $html.addClass("uk-modal-page").height(); // force browser engine redraw
+            $html.addClass('uk-modal-page').height(); // force browser engine redraw
 
             // Update ARIA
             this.element.attr('aria-hidden', 'false');
 
-            this.element.trigger("show.uk.modal");
+            this.element.trigger('show.uk.modal');
 
             UI.Utils.checkDisplay(this.dialog, true);
 
@@ -1053,7 +1056,7 @@
 
                 this.one(UI.support.transition.end, function() {
                     $this._hide();
-                }).removeClass("uk-open");
+                }).removeClass('uk-open');
 
             } else {
 
@@ -1081,9 +1084,9 @@
                 pad = parseInt(this.dialog.css('margin-top'), 10) + parseInt(this.dialog.css('margin-bottom'), 10);
 
                 if ((dh + pad) < window.innerHeight) {
-                    this.dialog.css({'top': (window.innerHeight/2 - dh/2) - pad });
+                    this.dialog.css({top: (window.innerHeight/2 - dh/2) - pad });
                 } else {
-                    this.dialog.css({'top': ''});
+                    this.dialog.css({top: ''});
                 }
             }
         },
@@ -1103,8 +1106,8 @@
                 h      = wh - 2*(offset < 20 ? 20:offset) - dh;
 
                 scrollable.css({
-                    'max-height': (h < this.options.minScrollHeight ? '':h),
-                    'height':''
+                    maxHeight: (h < this.options.minScrollHeight ? '':h),
+                    height:''
                 });
 
                 return true;
@@ -1145,16 +1148,16 @@
         boot: function() {
 
             // init code
-            UI.$html.on("click.modal.uikit", "[data-uk-modal]", function(e) {
+            UI.$html.on('click.modal.uikit', '[data-uk-modal]', function(e) {
 
                 var ele = UI.$(this);
 
-                if (ele.is("a")) {
+                if (ele.is('a')) {
                     e.preventDefault();
                 }
 
-                if (!ele.data("modalTrigger")) {
-                    var modal = UI.modalTrigger(ele, UI.Utils.options(ele.attr("data-uk-modal")));
+                if (!ele.data('modalTrigger')) {
+                    var modal = UI.modalTrigger(ele, UI.Utils.options(ele.attr('data-uk-modal')));
                     modal.show();
                 }
 
@@ -1175,7 +1178,7 @@
             var $this = this;
 
             this.options = UI.$.extend({
-                "target": $this.element.is("a") ? $this.element.attr("href") : false
+                target: $this.element.is('a') ? $this.element.attr('href') : false
             }, this.options);
 
             this.modal = UI.modal(this.options.target, this.options);
@@ -1186,17 +1189,17 @@
             });
 
             //methods
-            this.proxy(this.modal, "show hide isActive");
+            this.proxy(this.modal, 'show hide isActive');
         }
     });
 
     UI.modal.dialog = function(content, options) {
 
-        var modal = UI.modal(UI.$(UI.modal.dialog.template).appendTo("body"), options);
+        var modal = UI.modal(UI.$(UI.modal.dialog.template).appendTo('body'), options);
 
-        modal.on("hide.uk.modal", function(){
+        modal.on('hide.uk.modal', function(){
             if (modal.persist) {
-                modal.persist.appendTo(modal.persist.data("modalPersistParent"));
+                modal.persist.appendTo(modal.persist.data('modalPersistParent'));
                 modal.persist = false;
             }
             modal.element.remove();
@@ -1267,11 +1270,11 @@
 
         input = modal.element.find("input[type='text']").val(value || '').on('keyup', function(e){
             if (e.keyCode == 13) {
-                modal.element.find(".js-modal-ok").trigger('click');
+                modal.element.find('.js-modal-ok').trigger('click');
             }
         });
 
-        modal.element.find(".js-modal-ok").on("click", function(){
+        modal.element.find('.js-modal-ok').on('click', function(){
             if (onsubmit(input.val())!==false){
                 modal.hide();
             }
@@ -1291,12 +1294,10 @@
         return modal.show();
     };
 
-
     UI.modal.labels = {
-        'Ok': 'Ok',
-        'Cancel': 'Cancel'
+        Ok: 'Ok',
+        Cancel: 'Cancel'
     };
-
 
     // helper functions
     function setContent(content, modal){
@@ -1310,14 +1311,14 @@
 
             if(content.parent().length) {
                 modal.persist = content;
-                modal.persist.data("modalPersistParent", content.parent());
+                modal.persist.data('modalPersistParent', content.parent());
             }
         }else if (typeof content === 'string' || typeof content === 'number') {
                 // just insert the data as innerHTML
                 content = UI.$('<div></div>').html(content);
         }else {
                 // unsupported data type!
-                content = UI.$('<div></div>').html('UIkit.modal Error: Unsupported data type: ' + typeof content);
+                content = UI.$('<div></div>').html('UIkit2.modal Error: Unsupported data type: ' + typeof content);
         }
 
         content.appendTo(modal.element.find('.uk-modal-dialog'));
@@ -1325,9 +1326,9 @@
         return modal;
     }
 
-})(UIkit);
+})(UIkit2);
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(UI) {
 
     "use strict";
@@ -1357,12 +1358,12 @@
             scrollpos = {x: window.pageXOffset, y: window.pageYOffset};
 
             bar.attr('mode', options.mode);
-            element.addClass("uk-active");
+            element.addClass('uk-active');
 
-            $body.css({width: window.innerWidth - scrollbarwidth, height: window.innerHeight}).addClass("uk-offcanvas-page");
+            $body.css({width: window.innerWidth - scrollbarwidth, height: window.innerHeight}).addClass('uk-offcanvas-page');
 
             if (options.mode == 'push' || options.mode == 'reveal') {
-                $body.css((rtl ? "margin-right" : "margin-left"), (rtl ? -1 : 1) * (bar.outerWidth() * dir));
+                $body.css((rtl ? 'margin-right' : 'margin-left'), (rtl ? -1 : 1) * (bar.outerWidth() * dir));
             }
 
             if (options.mode == 'reveal') {
@@ -1372,7 +1373,7 @@
             $html.css('margin-top', scrollpos.y * -1).width(); // .width() - force redraw
 
 
-            bar.addClass("uk-offcanvas-bar-show");
+            bar.addClass('uk-offcanvas-bar-show');
 
             this._initElement(element);
 
@@ -1385,14 +1386,14 @@
         hide: function(force) {
 
             var $body = UI.$('body'),
-                panel = UI.$(".uk-offcanvas.uk-active"),
-                rtl   = (UI.langdirection == "right"),
-                bar   = panel.find(".uk-offcanvas-bar:first"),
+                panel = UI.$('.uk-offcanvas.uk-active'),
+                rtl   = (UI.langdirection == 'right'),
+                bar   = panel.find('.uk-offcanvas-bar:first'),
                 finalize = function() {
-                    $body.removeClass("uk-offcanvas-page").css({"width": "", "height": "", "margin-left": "", "margin-right": ""});
-                    panel.removeClass("uk-active");
+                    $body.removeClass('uk-offcanvas-page').css({width: '', height: '', marginLeft: '', marginRight: ''});
+                    panel.removeClass('uk-active');
 
-                    bar.removeClass("uk-offcanvas-bar-show");
+                    bar.removeClass('uk-offcanvas-bar-show');
                     $html.css('margin-top', '');
                     window.scrollTo(scrollpos.x, scrollpos.y);
                     bar.trigger('hide.uk.offcanvas', [panel, bar]);
@@ -1443,7 +1444,7 @@
                 Offcanvas.hide();
             });
 
-            element.on('click', "a[href*='#']", function(e){
+            element.on('click', 'a[href*="#"]', function(e){
 
                 var link = UI.$(this),
                     href = link.attr('href');
@@ -1523,9 +1524,9 @@
 
     UI.offcanvas = Offcanvas;
 
-})(UIkit);
+})(UIkit2);
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(UI) {
 
     "use strict";
@@ -1543,8 +1544,8 @@
 
         defaults: {
             target     : false,
-            cls        : "uk-scrollspy-inview",
-            initcls    : "uk-scrollspy-init-inview",
+            cls        : 'uk-scrollspy-inview',
+            initcls    : 'uk-scrollspy-init-inview',
             topoffset  : 0,
             leftoffset : 0,
             repeat     : false,
@@ -1554,18 +1555,18 @@
         boot: function() {
 
             // listen to scroll and resize
-            $doc.on("scrolling.uk.document", checkScrollSpy);
-            $win.on("load resize orientationchange", UI.Utils.debounce(checkScrollSpy, 50));
+            $doc.on('scrolling.uk.document', checkScrollSpy);
+            $win.on('load resize orientationchange', UI.Utils.debounce(checkScrollSpy, 50));
 
             // init code
             UI.ready(function(context) {
 
-                UI.$("[data-uk-scrollspy]", context).each(function() {
+                UI.$('[data-uk-scrollspy]', context).each(function() {
 
                     var element = UI.$(this);
 
-                    if (!element.data("scrollspy")) {
-                        var obj = UI.scrollspy(element, UI.Utils.options(element.attr("data-uk-scrollspy")));
+                    if (!element.data('scrollspy')) {
+                        var obj = UI.scrollspy(element, UI.Utils.options(element.attr('data-uk-scrollspy')));
                     }
                 });
             });
@@ -1593,13 +1594,13 @@
                             $this.offset = element.offset();
                             initinview = true;
 
-                            element.trigger("init.uk.scrollspy");
+                            element.trigger('init.uk.scrollspy');
                         }
 
                         element.data('scrollspy-idle', setTimeout(function(){
 
-                            element.addClass("uk-scrollspy-inview").toggleClass(toggle).width();
-                            element.trigger("inview.uk.scrollspy");
+                            element.addClass('uk-scrollspy-inview').toggleClass(toggle).width();
+                            element.trigger('inview.uk.scrollspy');
 
                             element.data('scrollspy-idle', false);
                             element.data('inviewstate', true);
@@ -1616,10 +1617,10 @@
                             element.data('scrollspy-idle', false);
                         }
 
-                        element.removeClass("uk-scrollspy-inview").toggleClass(toggle);
+                        element.removeClass('uk-scrollspy-inview').toggleClass(toggle);
                         element.data('inviewstate', false);
 
-                        element.trigger("outview.uk.scrollspy");
+                        element.trigger('outview.uk.scrollspy');
                     }
 
                     toggleclsIdx = togglecls[toggleclsIdx + 1] ? (toggleclsIdx + 1) : 0;
@@ -1646,28 +1647,28 @@
     UI.component('scrollspynav', {
 
         defaults: {
-            "cls"          : 'uk-active',
-            "closest"      : false,
-            "topoffset"    : 0,
-            "leftoffset"   : 0,
-            "smoothscroll" : false
+            cls          : 'uk-active',
+            closest      : false,
+            topoffset    : 0,
+            leftoffset   : 0,
+            smoothscroll : false
         },
 
         boot: function() {
 
             // listen to scroll and resize
-            $doc.on("scrolling.uk.document", checkScrollSpyNavs);
-            $win.on("resize orientationchange", UI.Utils.debounce(checkScrollSpyNavs, 50));
+            $doc.on('scrolling.uk.document', checkScrollSpyNavs);
+            $win.on('resize orientationchange', UI.Utils.debounce(checkScrollSpyNavs, 50));
 
             // init code
             UI.ready(function(context) {
 
-                UI.$("[data-uk-scrollspy-nav]", context).each(function() {
+                UI.$('[data-uk-scrollspy-nav]', context).each(function() {
 
                     var element = UI.$(this);
 
-                    if (!element.data("scrollspynav")) {
-                        var obj = UI.scrollspynav(element, UI.Utils.options(element.attr("data-uk-scrollspy-nav")));
+                    if (!element.data('scrollspynav')) {
+                        var obj = UI.scrollspynav(element, UI.Utils.options(element.attr('data-uk-scrollspy-nav')));
                     }
                 });
             });
@@ -1676,7 +1677,7 @@
         init: function() {
 
             var ids     = [],
-                links   = this.find("a[href^='#']").each(function(){ if(this.getAttribute("href").trim()!=='#') ids.push(this.getAttribute("href")); }),
+                links   = this.find("a[href^='#']").each(function(){ if(this.getAttribute('href').trim()!=='#') ids.push(this.getAttribute('href')); }),
                 targets = UI.$(ids.join(",")),
 
                 clsActive  = this.options.cls,
@@ -1708,12 +1709,12 @@
 
                     if ($this.options.closest) {
                         links.blur().closest(clsClosest).removeClass(clsActive);
-                        navitems = links.filter("a[href='#"+target.attr("id")+"']").closest(clsClosest).addClass(clsActive);
+                        navitems = links.filter("a[href='#"+target.attr('id')+"']").closest(clsClosest).addClass(clsActive);
                     } else {
                         navitems = links.removeClass(clsActive).filter("a[href='#"+target.attr("id")+"']").addClass(clsActive);
                     }
 
-                    $this.element.trigger("inview.uk.scrollspynav", [target, navitems]);
+                    $this.element.trigger('inview.uk.scrollspynav', [target, navitems]);
                 }
             };
 
@@ -1725,7 +1726,7 @@
 
             fn();
 
-            this.element.data("scrollspynav", this);
+            this.element.data('scrollspynav', this);
 
             this.check = fn;
             scrollspynavs.push(this);
@@ -1733,9 +1734,9 @@
         }
     });
 
-})(UIkit);
+})(UIkit2);
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(UI) {
 
     "use strict";
@@ -1745,12 +1746,12 @@
         boot: function() {
 
             // init code
-            UI.$html.on("click.smooth-scroll.uikit", "[data-uk-smooth-scroll]", function(e) {
+            UI.$html.on('click.smooth-scroll.uikit', '[data-uk-smooth-scroll]', function(e) {
                 var ele = UI.$(this);
 
-                if (!ele.data("smoothScroll")) {
-                    var obj = UI.smoothScroll(ele, UI.Utils.options(ele.attr("data-uk-smooth-scroll")));
-                    ele.trigger("click");
+                if (!ele.data('smoothScroll')) {
+                    var obj = UI.smoothScroll(ele, UI.Utils.options(ele.attr('data-uk-smooth-scroll')));
+                    ele.trigger('click');
                 }
 
                 return false;
@@ -1761,9 +1762,9 @@
 
             var $this = this;
 
-            this.on("click", function(e) {
+            this.on('click', function(e) {
                 e.preventDefault();
-                scrollToElement(UI.$(this.hash).length ? UI.$(this.hash) : UI.$("body"), $this.options);
+                scrollToElement(UI.$(this.hash).length ? UI.$(this.hash) : UI.$('body'), $this.options);
             });
         }
     });
@@ -1787,7 +1788,7 @@
         }
 
         // animate to target, fire callback when done
-        UI.$("html,body").stop().animate({scrollTop: target}, options.duration, options.transition).promise().done(options.complete);
+        UI.$('html,body').stop().animate({scrollTop: target}, options.duration, options.transition).promise().done(options.complete);
     }
 
     UI.Utils.scrollToElement = scrollToElement;
@@ -1796,9 +1797,9 @@
         UI.$.easing.easeOutExpo = function(x, t, b, c, d) { return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b; };
     }
 
-})(UIkit);
+})(UIkit2);
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 //  Based on Zeptos touch.js
 //  https://raw.github.com/madrobby/zepto/master/src/touch.js
 //  Zepto.js may be freely distributed under the MIT license.
@@ -1883,7 +1884,7 @@
         longTapTimeout = setTimeout(longTap, longTapDelay);
 
         // adds the current touch contact for IE gesture recognition
-        if (gesture && ( e.type == 'MSPointerDown' || e.type == 'pointerdown' || e.type == 'touchstart' ) ) {
+        if (e.originalEvent && e.originalEvent.pointerId && gesture && ( e.type == 'MSPointerDown' || e.type == 'pointerdown' || e.type == 'touchstart' ) ) {
           gesture.addPointer(e.originalEvent.pointerId);
         }
 
@@ -1974,7 +1975,7 @@
   });
 })(jQuery);
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(UI) {
 
     "use strict";
@@ -1994,12 +1995,12 @@
             // init code
             UI.ready(function(context) {
 
-                UI.$("[data-uk-margin]", context).each(function() {
+                UI.$('[data-uk-margin]', context).each(function() {
 
                     var ele = UI.$(this);
 
-                    if (!ele.data("stackMargin")) {
-                        UI.stackMargin(ele, UI.Utils.options(ele.attr("data-uk-margin")));
+                    if (!ele.data('stackMargin')) {
+                        UI.stackMargin(ele, UI.Utils.options(ele.attr('data-uk-margin')));
                     }
                 });
             });
@@ -2017,20 +2018,20 @@
 
                 UI.$(function() {
                     fn();
-                    UI.$win.on("load", fn);
+                    UI.$win.on('load', fn);
                 });
 
                 return UI.Utils.debounce(fn, 20);
             })());
 
-            this.on("display.uk.check", function(e) {
-                if (this.element.is(":visible")) this.process();
+            this.on('display.uk.check', function(e) {
+                if (this.element.is(':visible')) this.process();
             }.bind(this));
 
             if (this.options.observe) {
 
                 UI.domObserve(this.element, function(e) {
-                    if ($this.element.is(":visible")) $this.process();
+                    if ($this.element.is(':visible')) $this.process();
                 });
             }
 
@@ -2082,7 +2083,7 @@
                 ratio  = (width / iwidth),
                 height = Math.floor(ratio * ele.data('height'));
 
-            ele.css({'height': (width < iwidth) ? height : ele.data('height')});
+            ele.css({height: (width < iwidth) ? height : ele.data('height')});
         };
 
         UI.component('responsiveElement', {
@@ -2094,11 +2095,11 @@
                 // init code
                 UI.ready(function(context) {
 
-                    UI.$("iframe.uk-responsive-width, [data-uk-responsive]", context).each(function() {
+                    UI.$('iframe.uk-responsive-width, [data-uk-responsive]', context).each(function() {
 
                         var ele = UI.$(this), obj;
 
-                        if (!ele.data("responsiveElement")) {
+                        if (!ele.data('responsiveElement')) {
                             obj = UI.responsiveElement(ele, {});
                         }
                     });
@@ -2112,10 +2113,8 @@
                 if (ele.attr('width') && ele.attr('height')) {
 
                     ele.data({
-
-                        'width' : ele.attr('width'),
-                        'height': ele.attr('height')
-
+                        width : ele.attr('width'),
+                        height: ele.attr('height')
                     }).on('display.uk.check', function(){
                         check(ele);
                     });
@@ -2136,7 +2135,6 @@
         }, 15));
 
     })();
-
 
 
     // helper
@@ -2162,8 +2160,8 @@
                 pos    = offset.top + height;
 
                 $ele.data({
-                    'ukMarginPos': pos,
-                    'ukMarginTop': offset.top
+                    ukMarginPos: pos,
+                    ukMarginTop: offset.top
                 });
 
                 if (min === false || (offset.top < min.top) ) {
@@ -2311,20 +2309,20 @@
         return val;
     }
 
-})(UIkit);
+})(UIkit2);
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(addon) {
 
     var component;
 
-    if (window.UIkit) {
-        component = addon(UIkit);
+    if (window.UIkit2) {
+        component = addon(UIkit2);
     }
 
-    if (typeof define == "function" && define.amd) {
-        define("uikit-slideshow", ["uikit"], function() {
-            return component || addon(UIkit);
+    if (typeof define == 'function' && define.amd) {
+        define('uikit-slideshow', ['uikit'], function() {
+            return component || addon(UIkit2);
         });
     }
 
@@ -2337,9 +2335,9 @@
     UI.component('slideshow', {
 
         defaults: {
-            animation          : "fade",
+            animation          : 'fade',
             duration           : 500,
-            height             : "auto",
+            height             : 'auto',
             start              : 0,
             autoplay           : false,
             autoplayInterval   : 7000,
@@ -2371,8 +2369,8 @@
 
                     var slideshow = UI.$(this);
 
-                    if (!slideshow.data("slideshow")) {
-                        UI.slideshow(slideshow, UI.Utils.options(slideshow.attr("data-uk-slideshow")));
+                    if (!slideshow.data('slideshow')) {
+                        UI.slideshow(slideshow, UI.Utils.options(slideshow.attr('data-uk-slideshow')));
                     }
                 });
             });
@@ -2403,7 +2401,7 @@
 
             this.update();
 
-            this.on("click.uk.slideshow", '[data-uk-slideshow-item]', function(e) {
+            this.on('click.uk.slideshow', '[data-uk-slideshow-item]', function(e) {
 
                 e.preventDefault();
 
@@ -2460,7 +2458,7 @@
             });
 
             this.on('display.uk.check', function(){
-                if ($this.element.is(":visible")) {
+                if ($this.element.is(':visible')) {
 
                     $this.resize();
 
@@ -2472,7 +2470,7 @@
             });
 
             UI.domObserve(this.element, function(e) {
-                if ($this.container.children(':not([data-slide])').length) {
+                if ($this.container.children(':not([data-slideshow-slide])').not('.uk-slideshow-ghost').length) {
                     $this.update(true);
                 }
             });
@@ -2594,7 +2592,7 @@
                 }
 
                 slide.data('processed', ++processed);
-                slide.attr('data-slide', type);
+                slide.attr('data-slideshow-slide', type);
             });
 
             if (processed) {
@@ -2655,8 +2653,8 @@
                         $this.playmedia(nextmedia);
                     }
 
-                    next.addClass("uk-active").attr('aria-hidden', 'false');
-                    current.removeClass("uk-active").attr('aria-hidden', 'true');
+                    next.addClass('uk-active').attr('aria-hidden', 'false');
+                    current.removeClass('uk-active').attr('aria-hidden', 'true');
 
                     $this.animating = false;
                     $this.current   = index;

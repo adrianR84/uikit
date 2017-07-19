@@ -6505,7 +6505,7 @@ a.uk-thumbnail:focus {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: rgba(50, 50, 50, 0.1);
+  background: rgba(113, 48, 85, 0.4);
   /* 1 */
   text-indent: 100%;
   overflow: hidden;
@@ -6520,17 +6520,17 @@ a.uk-thumbnail:focus {
  */
 .uk-dotnav > * > :hover,
 .uk-dotnav > * > :focus {
-  background: rgba(50, 50, 50, 0.4);
+  background: rgba(113, 48, 85, 0.6);
   /* 2 */
   outline: none;
 }
 /* OnClick */
 .uk-dotnav > * > :active {
-  background: rgba(50, 50, 50, 0.6);
+  background: rgba(113, 48, 85, 0.99);
 }
 /* Active */
 .uk-dotnav > .uk-active > * {
-  background: rgba(50, 50, 50, 0.4);
+  background: rgba(113, 48, 85, 0.99);
   -webkit-transform: scale(1.3);
   transform: scale(1.3);
 }

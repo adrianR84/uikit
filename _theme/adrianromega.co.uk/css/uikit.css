@@ -1,4 +1,4 @@
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /*==========================================
 =            include core uikit            =
 ==========================================*/
@@ -2211,41 +2211,6 @@ html:not(.uk-touch) .uk-nav-offcanvas ul a:hover {
 }
 .uk-list-striped > li:first-child {
   border-top: 1px solid #303d71;
-}
-/* ========================================================================
-   Component: Description list
- ========================================================================== */
-/* Modifier: `uk-description-list-horizontal`
- ========================================================================== */
-/* Tablet and bigger */
-@media (min-width: 768px) {
-  .uk-description-list-horizontal {
-    overflow: hidden;
-  }
-  .uk-description-list-horizontal > dt {
-    width: 160px;
-    float: left;
-    clear: both;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .uk-description-list-horizontal > dd {
-    margin-left: 180px;
-  }
-}
-/* Modifier: `uk-description-list-line`
- ========================================================================== */
-.uk-description-list-line > dt {
-  font-weight: normal;
-}
-.uk-description-list-line > dt:nth-child(n+2) {
-  margin-top: 5px;
-  padding-top: 5px;
-  border-top: 1px solid #303d71;
-}
-.uk-description-list-line > dd {
-  color: #999;
 }
 /* ========================================================================
    Component: Form
@@ -5159,6 +5124,159 @@ select.uk-form-width-mini {
   content: "\f2b1";
 }
 /* ========================================================================
+   Component: Close
+ ========================================================================== */
+/*
+ * Removes inner padding and border in Firefox 4+.
+ */
+.uk-close::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+/*
+ * 1. Correct inability to style clickable `input` types in iOS.
+ * 2. Remove margins in Chrome, Safari and Opera.
+ * 3. Remove borders for `button`.
+ * 4. Address `overflow` set to `hidden` in IE 8/9/10/11.
+ * 5. Correct `font` properties and `color` not being inherited for `button`.
+ * 6. Address inconsistent `text-transform` inheritance which is only inherit in Firefox and IE
+ * 7. Remove default `button` padding and background color
+ * 8. Style
+ */
+.uk-close {
+  /* 1 */
+  -webkit-appearance: none;
+  /* 2 */
+  margin: 0;
+  /* 3 */
+  border: none;
+  /* 4 */
+  overflow: visible;
+  /* 5 */
+  font: inherit;
+  color: inherit;
+  /* 6 */
+  text-transform: none;
+  /* 7. */
+  padding: 0;
+  background: transparent;
+  /* 8 */
+  display: inline-block;
+  box-sizing: content-box;
+  width: 20px;
+  line-height: 20px;
+  text-align: center;
+  vertical-align: middle;
+  opacity: 0.3;
+}
+/* Icon */
+.uk-close:after {
+  display: block;
+  content: "\f00d";
+  font-family: FontAwesome;
+}
+/*
+ * Hover
+ * 1. Apply hover style also to focus state
+ * 2. Remove default focus style
+ * 3. Required for `a` elements
+ */
+.uk-close:hover,
+.uk-close:focus {
+  opacity: 0.5;
+  /* 2 */
+  outline: none;
+  /* 3 */
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* Modifier
+ ========================================================================== */
+.uk-close-alt {
+  padding: 2px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 1;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 0 6px rgba(0, 0, 0, 0.3);
+}
+/* Hover */
+.uk-close-alt:hover,
+.uk-close-alt:focus {
+  opacity: 1;
+}
+/* Icon */
+.uk-close-alt:after {
+  opacity: 0.5;
+}
+.uk-close-alt:hover:after,
+.uk-close-alt:focus:after {
+  opacity: 0.8;
+}
+/* ========================================================================
+   Component: Badge
+ ========================================================================== */
+.uk-badge {
+  display: inline-block;
+  padding: 0 5px;
+  background: #303d71;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 24px;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+  text-transform: none;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom-color: rgba(0, 0, 0, 0.3);
+  background-origin: border-box;
+  background-image: -webkit-linear-gradient(top, #42549c, #242d54);
+  background-image: linear-gradient(to bottom, #42549c, #242d54);
+  border-radius: 2px;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+/*
+ * Keep color when badge is a link
+ */
+a.uk-badge:hover {
+  color: #fff;
+}
+/* Modifier: `uk-badge-notification`;
+ ========================================================================== */
+.uk-badge-notification {
+  box-sizing: border-box;
+  min-width: 25px;
+  border-radius: 500px;
+  font-size: 17px;
+  line-height: 25px;
+}
+/* Color modifier
+ ========================================================================== */
+/*
+ * Modifier: `uk-badge-success`
+ */
+.uk-badge-success {
+  background-color: #279860;
+  background-image: -webkit-linear-gradient(top, #34C97E, #1f784b);
+  background-image: linear-gradient(to bottom, #34C97E, #1f784b);
+}
+/*
+ * Modifier: `uk-badge-warning`
+ */
+.uk-badge-warning {
+  background-color: #e99d2a;
+  background-image: -webkit-linear-gradient(top, #F7B859, #df8b0b);
+  background-image: linear-gradient(to bottom, #F7B859, #df8b0b);
+}
+/*
+ * Modifier: `uk-badge-danger`
+ */
+.uk-badge-danger {
+  background-color: #c52c67;
+  background-image: -webkit-linear-gradient(top, #E54985, #af1953);
+  background-image: linear-gradient(to bottom, #E54985, #af1953);
+}
+/* ========================================================================
    Component: Overlay
  ========================================================================== */
 /*
@@ -7702,7 +7820,7 @@ select.uk-form-width-mini {
 ================================*/
 /*=====  End of modified  ======*/
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Dotnav
  ========================================================================== */
@@ -7831,7 +7949,7 @@ select.uk-form-width-mini {
   float: none;
 }
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Slidenav
  ========================================================================== */
@@ -7930,7 +8048,7 @@ select.uk-form-width-mini {
   color: rgba(255, 255, 255, 0.9);
 }
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Progress
  ========================================================================== */
@@ -8043,7 +8161,7 @@ select.uk-form-width-mini {
   border-radius: 500px;
 }
 
-/*! UIkit 2.27.1 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.27.2 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Slideshow
  ========================================================================== */
